@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "temp",
+    "password": "dummy",
     "database": "yakssok",
     "host": "127.0.0.1",
     "dialect": "mysql",
@@ -17,8 +17,8 @@
   },
   "production": {
     "username": "root",
-    "password": null,
-    "database": "database_production",
+    "password": "dummy",
+    "database": "yakssok",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "operatorsAliases": false

@@ -16,6 +16,8 @@ var sequelize = require('./models/index.js').sequelize;
 
 //라우팅 파일 불러오기
 var indexRouter = require('./routes/index');
+var userRouter = require('./routes/users');
+var productRouter = require('./routes/products');
 
 var app = express();
 
@@ -37,14 +39,17 @@ app.use(cookieParser());
 
 
 
-//정적인 웹요소(html,css,js파일들)를 expess웹서버를 통해
-//서비스할수 있게 설정해둠(디폴트는 public)
+// 정적인 웹요소(html,css,js파일들)를 expess웹서버를 통해
+// 서비스할수 있게 설정(디폴트는 public)
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(path.join(__dirname, 'dist')));
 
 
-//라우팅정보를 익스프레스 웹서버에서 사용할수있게 설정
+// 라우팅정보를 익스프레스 웹서버에서 사용할수있게 설정
+// RESTful API작성 규칙에 맞게 경로이름은 소문자, 복수형으로 한다.
 app.use('/', indexRouter);
+app.use('/users', userRouter);
+app.use('/products', productRouter);
 
 
 // catch 404 and forward to error handler
@@ -52,6 +57,8 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
+// 개발모드 확인
+console.log('모드:'+ app.get('env') );
 
 // error handler
 app.use(function(err, req, res, next) {

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+       
+        <h2>public 폴더의 index.html입니다.</h2>
+        <input type="button" value="async await등록" @click="join">
+        <input type="button" value="promise 등록" @click="promise">
+        <input type="button" value="async2 등록" @click="another">
+        <input type="button" value="회원가입" @click="post">
+        <input type="file" v>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data:{
+                test:'전송테스트',
+               user:{
+                user_id:'111',
+                user_pwd:'pwd',
+                email:'111@gak.com',
+                like_product:'dkdkdl'
+               }
+            },
+            methods: {
+                join() {
+                    console.log('join');
+                    var data = {
+                        "emial": "11@gmail.com",
+                        "id": "aaa",
+                        "pwd": "pwd"
+                    }
+                    let test = async () => {
+
+                        try {
+                            console.log('호출')
+                            // 콜백, Promise 방식에서는 .then 에서 처리하던 결과를
+                            // async,await 에서는 변수에 담는다
+                            // let result = await axios.post('http://localhost:4000/users', data);
+                            // console.log(result);
+                            let result = await axios.get('http://localhost:4000/users');
+                            console.log(result);
+
+
+                        } catch (err) {
+                            console.error(err);
+                        }
+
+                    }
+                    test();
+
+                },
+                promise() {
+                    axios.get('/users')
+                        .then((result) => {
+                            console.log(result);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        })
+                },
+                another() {
+                    console.log('another');
+                    // 이상하게 객체가 선언되어 있으니 오류가 나네? 
+                    // var data = {
+                    //     emial: "11@gmail.com",
+                    //     id: "aaa",
+                    //     pwd: "pwd"
+                    // }
+
+                    // 맨 위의 join 과 같은 방식이나 async가 적용된 함수를
+                    // 이름없이 호출할 수 있다.
+                        (
+                            async () => {
+
+                                console.log('호출')
+                                try {
+                                    // **********************************************
+                                    // 콜백, Promise 방식에서는 .then 에서 처리하던 결과를
+                                    // async,await 에서는 변수에 담는다
+                                    // let result = await axios.post('http://localhost:4000/users', data);
+                                    // console.log(result);
+                                    let result = await axios.get('http://localhost:4000/users');
+                                    console.log(result);
+
+
+                                } catch (err) {
+                                    console.error(err);
+                                }
+
+                            })();
+                },
+                post(){
+                    // alert('호출')
+                    (async ()=>{
+                        try{
+                            var post = await (axios.post('/users',this.user))
+                            // 결과출력
+                            console.log(post);
+                        }catch(err){
+                            console.log('log'+err +'\n');
+                            console.error('error='+err);
+                        }
+                    }) ();
+                }
+            }
+        })
+
+
+    </script>
+</body>
+
+</html>

@@ -12,7 +12,8 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+//  포트를 환경변수로 만든 경우 그 환경변수를 따르고 아니면 4000번 포트를 듣는다
+var port = normalizePort(process.env.PORT || '4000');
 app.set('port', port);
 
 /**
