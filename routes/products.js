@@ -7,28 +7,14 @@ const Op = models.Sequelize.Op;
 const Product = models.Product;
 
 // 메인 화면에 뿌려질 제품 리스트 가져오기
-// router.get('/', async (req, res, next) => {
-//     try {
-//         let products = await Product.findAll({
-//             order:[['id','DESC']], // 최신 제품 
-//             limit:12  // 제품 개수는 12개로 
-//         });
-//         console.log(products);
-//         res.json(products);
-//     } catch (err) {
-//         console.log(err);
-//     }
-// });
 router.get('/', async (req, res, next) => {
     try {
         let products = await Product.findAll({
-            // order:[['id','DESC']], // 최신 제품 
-            // limit:12  // 제품 개수는 12개로 
+            order:[['id','DESC']], // 최신 제품 
+            limit:12  // 제품 개수는 12개로 
         });
-        // console.log(products);
-
+        console.log(products);
         res.json(products);
-        // res.send(products);
     } catch (err) {
         console.log(err);
     }
