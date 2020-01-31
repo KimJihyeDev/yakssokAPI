@@ -19,7 +19,7 @@
 </head>
 
 <body>
-    <div id="app" >
+    <div id="app">
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -188,7 +188,7 @@
                         <div class="col-lg-12">
                             <div class="ibox ">
                                 <div class="ibox-title">
-                                   이미지명 {{filter}}
+                                    <!-- 이미지명 {{filter}} -->
                                     <h5>All form elements <small>With custom checbox and radion elements.</small></h5>
                                     <div class="ibox-tools">
                                         <a class="collapse-link">
@@ -217,7 +217,10 @@
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품
                                                 이미지</label>
-                                            <div class="col-sm-10"><input type="file" class="form-control" v-model="selected_image" @change="filter"></div>
+                                            <!-- 선택한 파일의 값을 읽어오는 것은 v-on:change, 또는 v-on:inut을 이용 -->
+                                            <!-- v-model을 이용하는 것은 적합하지 않다. -->
+                                            <div class="col-sm-10"><input type="file" class="form-control"
+                                                    @input="filter"></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">픽토그램</label>
@@ -226,21 +229,25 @@
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품
                                                 상세</label>
-                                            <div class="col-sm-10"><textarea v-model="text" class="form-control"></textarea></div>
+                                            <div class="col-sm-10"><textarea v-model="text"
+                                                    class="form-control"></textarea></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">복용법</label>
-                                            <div class="col-sm-10"><textarea v-model="text" class="form-control"></textarea></div>
+                                            <div class="col-sm-10"><textarea v-model="text"
+                                                    class="form-control"></textarea></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">주의사항
-                                                </label>
-                                            <div class="col-sm-10"><textarea v-model="text" class="form-control"></textarea></div>
+                                            </label>
+                                            <div class="col-sm-10"><textarea v-model="text"
+                                                    class="form-control"></textarea></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">기타성분
-                                                </label>
-                                            <div class="col-sm-10"><textarea v-model="text" class="form-control"></textarea></div>
+                                            </label>
+                                            <div class="col-sm-10"><textarea v-model="text"
+                                                    class="form-control"></textarea></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group row"><label class="col-sm-2 col-form-label">Checkboxes
@@ -266,8 +273,8 @@
                                         <div class="form-group row"><label class="col-sm-2 col-form-label">카테고리
                                                 선택</label>
 
-                                            <div class="col-sm-10"><select class="form-control m-b" name="account" v-for="(item,idx) in parent_category" :bind:key="idx" v-model="parent_category" @change="">
-                                                    <option ></option>
+                                            <div class="col-sm-10"><select class="form-control m-b" name="account">
+                                                    <option></option>
                                                 </select>
 
                                                 <div class="col-lg-4 m-l-n"><select class="form-control" multiple="">
@@ -279,35 +286,22 @@
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
-                                        <div class="form-group row"><label class="col-sm-2 col-form-label">Control
-                                                sizing</label>
-
-                                            <div class="col-sm-10"><input type="text" placeholder=".form-control-lg"
-                                                    class="form-control form-control-lg m-b">
-                                                <input type="text" placeholder="Default input" class="form-control m-b">
-                                                <input type="text" placeholder=".form-control-sm"
-                                                    class="form-control form-control-sm">
-                                            </div>
-                                        </div>
-                                        <div class="hr-line-dashed"></div>
-                                        <div class="form-group row"><label class="col-sm-2 col-form-label">함량
-                                                </label>
-                                                
-                                            <div class="col-sm-10">
-                                                <div class="row">
-                                                    <div class="col-md-4"><input type="text" placeholder="함량"
-                                                            class="form-control"></div>
-                                                    <label class="col-sm-2 col-form-label">영양소 기준치</label>
-                                                    <div class="col-md-4"><input type="text" placeholder="%영양소기준치"
-                                                            class="form-control"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <!-- 성분 추가 컴포넌트 -->
+                                        <!-- @발생이벤트명="실행할 메소드" -->
+                                        <add-ingredient v-for="(item,idx) in component_count" 
+                                        ref="children"
+                                        ></add-ingredient> 
+                                        <!--  부모에게서 자식에게 넘겨준 props가 아닐경우에는 -->
+                                        <!-- 부모에서 자식 컴포넌트의 요소(data,methods등)을 사용하기 위해 ref사용한다-->
+                                        <button @click="increaseComponent" type="button">추가</button>
+                                        <button @click="decreaseComponent" type="button">제거</button>
+                                        <button @click="trasTest" type="button">확인</button>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group row">
                                             <div class="col-sm-4 col-sm-offset-2">
                                                 <button class="btn btn-white btn-sm" type="reset">취소</button>
-                                                <button class="btn btn-primary btn-sm" type="submit" @click="submit">등록</button>
+                                                <button class="btn btn-primary btn-sm" type="submit"
+                                                    @click="submit">등록</button>
                                             </div>
                                         </div>
                                     </form>
@@ -354,59 +348,174 @@
             });
         });
     </script>
+    <!--뷰로더 스크립트-->
+    <!-- <script src="https://unpkg.com/http-vue-loader"></script> -->
     <script>
-      
-        var app = new Vue({
-            data:{
-                text:'',
-                selected_image:'',
-                product:{
-                    parent_cetegory:0,
-                    child_category:0,
-                    product_name:'',
-                    product_image:'',
-                    product_desc:'',
-                    suggested_use:'',
-                    warnings:'',
-                    servings:0,
-                    total_servings:0,
-                    ingredients:{}, // 배열? 객체?
-                    other_ingredients:'',
-                    daily_value:'',
-                    hash_tag:'',
-                    pictogram:{}, // 배열? 객체
-                    like:0,
-
-
-                    
-
-
-
+        var addIngredient = {
+            template: `<div class="form-group row">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <label class="col-sm-1 col-form-label">함량
+                                    </label>
+                                    <div class="col-md-3"><input type="text" placeholder="함량"
+                                            class="form-control"  ref="ingredient" @change="inputEvent" ></div>
+                                    <label class="col-sm-1 col-form-label">영양소 기준치</label>
+                                    <div class="col-md-3"><input type="text" placeholder="%영양소기준치"
+                                            class="form-control"  ref="amountsPerServing" @change="inputEvent"></div>
+                                    <label class="col-sm-1 col-form-labe">영양소 기준치</label>
+                                    <div class="col-md-3"><input type="text" placeholder="%영양소기준치"
+                                            class="form-control"  ref="dailyValue" @change="inputEvent"></div>
+                                </div>
+                            </div>
+                        </div>
+                        `,
+            props:['test','text','obj'], 
+            data(){
+                return {
+                    childObj:{},
+                    objNum:0,
                 }
-
             },
             methods:{
-                submit(){ 
-                    (async ()=>{
-                        let result = await this.$axios.post('/products',this.product)
-                        console.log(result);
-                     }
-                    )();
+                inputEvent(){
+                    
+                    console.log(this.$refs.ingredient); // 결과는 input객체. ref가 적용된 태그의 객체가 반환되는 것 같다.
+                    // input 태그의 입력값을 알아내려면 value를 사용해야 한다.
+                    // this.obj.objNum.ingredient = this.obj.objNum.ingredient.value 
+                    this.childObj.ingredient = this.$refs.ingredient.value; // 성분=입력값으로 설정
+                    this.childObj.amountsPerServing = this.$refs.amountsPerServing.value; // 성분=입력값으로 설정
+                    this.childObj.dailyValue = this.$refs.dailyValue.value; // 성분=입력값으로 설정
+                    console.log(`입력값확인= ${this.$refs.ingredient.value}`)
+                    // console.log(`타입확인=${this.obj.objNum.ingredient.value}`); // htmlinputelement에서 값을 추출
+                    console.log(this.childObj); // 이렇게 할 경우 htmlinputelement객체가 반환된다. 어째서?
+                    // console.log(`전송할 객체 확인=${this.obj}`);
+                    
+                },
+                
+            },
+            created(){
+                // this.$on('increase',function(){
+                //     this.increase
+                // }); // created에 정의해도 되는건가??
+                // this.$on('open',function(){
+                //     // console.log를 자주 찍도록 하자!!
+                //     console.log('부모에서 발생시킨 open 이벤트를 수신처리함');
+                //     console.log(this);
+                //     alert('open 이벤트를 수신하였습니다.');
+                // })
+            }
+
+        }
+
+        var app = new Vue({
+            data: {
+                obj:{},
+                arr:[],
+                text: '임의의 문서',
+                selected_image: '',
+                component_count: 1,
+                product: {
+                    // parent_cetegory:0,
+                    child_category: 0,
+                    product_name: '',
+                    product_image: '',
+                    product_desc: '',
+                    suggested_use: '',
+                    warnings: '',
+                    servings: 0,
+                    total_servings: 0,
+                    ingredients: {}, // 배열? 객체?
+                    other_ingredients: '',
+                    daily_value: '',
+                    hash_tag: '',
+                    pictogram: {}, // 배열? 객체
+                    like: 0,
+
                 }
 
             },
-            filters:{
-              
-                
-               
-            },
-            computed:{
-                filter(){
+            methods: {
+                trasTest(){
+                    // 지금하려는 것
+                    // 전송버튼을 누르면
+                    // 생성된 입력폼의 모든 객체를 -> 몇개가 생성되었는지 알아내기
+                    // 배열에 집어넣기 -> arr.push()
+                    let idx = this.component_count;
+                    let arr = this.arr;
+                    for(var i = 0; i < idx; i++ ){
+                        console.log('자식');
+                         let temp = this.$refs.children[i].childObj;
+                         arr.push(temp);
+                    }
+                    console.log(this.arr);
+                    console.log('결과');
+                    // let temp = this.$refs.children[0].childObj;
+                    // console.log(temp);
+                    // this.$refs.child.$emit('increase'); // 자식 컴포넌트의 ref값을 증가시키기 위한 이벤트
+                    // this.component_count++; // 성
+                    
+                },
+                recieveEvent(){
+                    alert('자식이 일으킨 이벤트를 수신했을 때 발생하는 alert입니다');
+                },
+                submit() {
+                    (async () => {
+                        let result = await this.$axios.post('/products', this.product)
+                        console.log(result);
+                    }
+                    )();
+                },
+                increaseComponent() {
+                    let count = this.component_count;
+                    
+                    if(count >= 3){
+                        alert('성분은 최대 10개까지만 입력 가능합니다');
+                        console.log(`over${count}`);
+                        // console.log(count);
+                        return false;
+                    }else{
+                        console.log(this.component_count);
+                        this.component_count++; // 성분 입력창의 개수 증가
+                        console.log(this.component_count);
+                        console.log(count);
+                    }
+                    
+                    // var result = this.$refs.children.alarm()
+                    // this.$refs.children.$emit('open');
+                    // this.$refs.children.alarm()
+                    // console.log(`자식의 값=${result}`);
+                    // console.log(this.$refs.children.objNum);
+                },
+                decreaseComponent(){
+                    let count = this.component_count;
+                    
+                    if(count <= 1){
+                        alert('성분은 최소 1개는 입력해야 합니다.');
+                        return false;
+                    }else{
+                        this.component_count--; // 성분 입력창의 개수 감소
+                    }
+
+                },
+                filter() {
                     var fileArr = this.selected_image.split("\\");// 파일명을 경로를 기준으로 잘라 배열로 저장
-                    var fileName = fileArr[fileArr.length-1];  // 파일명만 추출
+                    var fileName = fileArr[fileArr.length - 1];  // 파일명만 추출
                     this.product.product_image = fileName;
                     return fileName;
                 }
+
+            },
+            filters: {
+
+
+
+            },
+            computed: {
+
+            },
+            components: {
+                // 'add-ingredient': httpVueLoader('./AddIngredient.vue')
+                'add-ingredient': addIngredient
             }
         }).$mount('#app');
         Vue.config.devtools = true;
