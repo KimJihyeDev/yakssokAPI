@@ -47,22 +47,10 @@ module.exports=(sequelize,DataTypes)=>{
             type:DataTypes.INTEGER,
             allowNull:false,
         },
-        ingredients:{  // 주요 성분
-            type:DataTypes.STRING(500),
-            allowNull:false,
-        },
-        other_ingredients:{ // 기타 성분
-            type:DataTypes.TEXT,
-            allowNull:false,
-        },
-        daily_value:{ // %영양소기준치
-            type:DataTypes.INTEGER,
-            allowNull:false,
-        },
-        pictogram:{ // 픽토그램
-            type:DataTypes.STRING(50),
-            allowNull:true,
-        },
+        // pictogram:{ // 픽토그램
+        //     type:DataTypes.STRING(50),
+        //     allowNull:true,
+        // },
         like:{ // 좋아요 수
             type:DataTypes.INTEGER,
             allowNull:true,
