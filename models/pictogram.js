@@ -1,13 +1,13 @@
 module.exports =(sequelize,DataTypes) => {
 
     return sequelize.define('pictogram',{
-        pictogram_name:{ // 픽토그래매 이름
-            type:DataTypes.STRING(100),
+        type:{
+            type:DataTypes.STRING(20), // 픽토그램의 타입(총5가지)
             allowNull:false,
         },
-        desc:{ // 상세설명
+        pictogram_name:{ // 픽토그램 이름
             type:DataTypes.STRING(100),
-            allowNull:true,
+            allowNull:false,
         },
         image_path:{ // 이미지 경로
             type:DataTypes.STRING(100),

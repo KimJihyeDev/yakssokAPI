@@ -3,12 +3,12 @@
             template: `<div class="form-group row">
                             <div class="col-sm-12">
                                 <div class="row">
-                                    <label class="col-sm-1 col-form-label">함량
+                                    <label class="col-sm-1 col-form-label">성분명
                                     </label>
-                                    <div class="col-md-3"><input type="text" placeholder="함량"
+                                    <div class="col-md-3"><input type="text" placeholder="성분명"
                                             class="form-control"  ref="ingredient" @change="inputEvent" ></div>
-                                    <label class="col-sm-1 col-form-label">영양소 기준치</label>
-                                    <div class="col-md-3"><input type="text" placeholder="%영양소기준치"
+                                    <label class="col-sm-1 col-form-label">함유량</label>
+                                    <div class="col-md-3"><input type="text" placeholder="함량"
                                             class="form-control"  ref="amountsPerServing" @change="inputEvent"></div>
                                     <label class="col-sm-1 col-form-labe">영양소 기준치</label>
                                     <div class="col-md-3"><input type="text" placeholder="%영양소기준치"

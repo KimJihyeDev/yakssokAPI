@@ -26,6 +26,7 @@ db.Product = require('./product')(sequelize,Sequelize);
 db.Ingredient = require('./ingredient')(sequelize,Sequelize);
 db.Pictogram = require('./pictogram')(sequelize,Sequelize);
 db.HashTag = require('./hashtag')(sequelize,Sequelize);
+db.Temp = require('./temp')(sequelize,Sequelize);
 
 // 테이블 간의 관계를 정의
 

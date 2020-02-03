@@ -214,36 +214,21 @@
                                     <form method="post" v-on:submit.prevent="checkForm">
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품명</label>
 
-                                            <div class="col-sm-10"><input type="text" class="form-control" v-model="product.product_name"></div>
-                                        </div>
-                                        <div class="hr-line-dashed"></div>
-                                        <div class="form-group  row">
-                                            <label class="col-sm-2 col-form-label">픽토그램</label>
-                                            <div class="col-sm-10"><input type="file" class="form-control"
-                                                    v-for="item in pictogram_count" ref="pictogram" placeholder="이미지 파일만 등록해 주세요"></div>
-                                        </div>
-                                        <div class="form-group row"><label class="col-sm-3 col-form-label text-navy">이미지 파일만 등록해 주세요.</label>
-                                            <div class="col-sm-9">
-                                                <div class="row">
-                                                    <div class="col-md-1"><input type="button" placeholder=".col-md-2" class="btn btn-default btn-sm" value="추가" @click="increasePictogram"></div>
-                                                    <div class="col-md-1"><input type="button" placeholder=".col-md-2" class="btn btn-default btn-sm" value="제거" @click="decreasePictogram"></div>
-                                                    <div class="col-md-2"><input type="button" placeholder=".col-md-2" class="btn btn-default btn-sm" value="픽토그램테스트" @click="trastestPictogram"></div>
-                                                    <div class="col-md-2"><input type="button" placeholder=".col-md-2" class="btn btn-default btn-sm" value="이미지테스트" @click="transTestImage"></div>
-                                                    <!-- <div class="col-md-3"><input type="button" placeholder=".col-md-3" class="form-control"></div> -->
-                                                    <!-- <div class="col-md-4"><input type="button" placeholder=".col-md-4" class="form-control"></div> -->
-                                                </div>
-                                            </div>
+                                            <div class="col-sm-10"><input type="text" class="form-control"
+                                                    v-model="product.product_name"></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품
                                                 상세</label>
                                             <div class="col-sm-10"><textarea v-model="product.product_desc"
-                                                    class="form-control" v-model="product.product_desc"></textarea></div>
+                                                    class="form-control" v-model="product.product_desc"></textarea>
+                                            </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">복용법</label>
                                             <div class="col-sm-10"><textarea v-model="product.suggested_use"
-                                                    class="form-control" v-model="product.suggested_use"></textarea></div>
+                                                    class="form-control" v-model="product.suggested_use"></textarea>
+                                            </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">주의사항
@@ -255,7 +240,25 @@
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">기타성분
                                             </label>
                                             <div class="col-sm-10"><textarea v-model="product.other_ingredients"
-                                                    class="form-control" v-model="product.other_ingredients"></textarea></div>
+                                                    class="form-control" v-model="product.other_ingredients"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <div class="row">
+                                                    <label class="col-sm-2 col-form-label">1회 제공량
+                                                    </label>
+                                                    <!-- type=number로 지정 -->
+                                                    <div class="col-md-4"><input type="number" placeholder="숫자만 적어주세요"
+                                                            class="form-control" >
+                                                    </div>
+                                                    <label class="col-sm-2 col-form-label">전체 제공량</label>
+                                                    <div class="col-md-4"><input type="number" placeholder="숫자만 적어주세요"
+                                                            class="form-control" @change="total_servings" ref="total_servings"
+                                                           ></div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group row"><label class="col-sm-2 col-form-label">Checkboxes
@@ -281,22 +284,62 @@
                                         <div class="form-group row"><label class="col-sm-2 col-form-label">카테고리
                                                 선택</label>
 
-                                            <div class="col-sm-10"><select class="form-control m-b" name="account">
-                                                    <option></option>
+                                            <!-- <div class="col-sm-10"><select class="form-control m-b" name="account"> -->
+                                            <div class="col-lg-4 m-l-n"><select class="form-control m-b" name="account">
+                                                    <option> 비타민 A</option>
+                                                    <option>option 2</option>
+                                                    <option>option 3</option>
+                                                    <option>option 4</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label">픽토그램
+                                                선택</label>
+                                            <!-- {{pictograms.keep[0].pictogram_name}} -->
+                                            <!-- <div class="col-sm-10"><select class="form-control m-b" name="account"> -->
+                                            <div class="col-lg-2 m-l-n"><select class="form-control m-b" name="account"
+                                                    v-model="product.pictogram[0]">
+                                                    <option value="" disabled>보관방법</option>
+                                                    <option v-for="(item,idx) in pictograms.keep" :key="idx">
+                                                        {{item.pictogram_name}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-3 m-l-n"><select class="form-control m-b" name="account"
+                                                    v-model="product.pictogram[1]">
+                                                    <option value="" disabled>복용법/복용횟수</option>
+                                                    <option v-for="(item,idx) in pictograms.suggested_use" :key="idx">
+                                                        {{item.pictogram_name}}</option>
 
-                                                <div class="col-lg-4 m-l-n"><select class="form-control" multiple="">
-                                                        <option> 비타민 A</option>
-                                                        <option>option 2</option>
-                                                        <option>option 3</option>
-                                                        <option>option 4</option>
-                                                    </select></div>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-2 m-l-n"><select class="form-control m-b" name="account"
+                                                    v-model="product.pictogram[2]">
+                                                    <option value="" disabled>제형</option>
+                                                    <option v-for="(item,idx) in pictograms.formulation" :key="idx">
+                                                        {{item.pictogram_name}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-2 m-l-n"><select class="form-control m-b" name="account"
+                                                    v-model="product.pictogram[3]">
+                                                    <option value="" disabled>주의사항</option>
+                                                    <option v-for="(item,idx) in pictograms.caution" :key="idx">
+                                                        {{item.pictogram_name}}</option>
+
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-2 m-l-n"><select class="form-control m-b" name="account"
+                                                    v-model="product.pictogram[4]">
+                                                    <option value="" disabled>경고</option>
+                                                    <option v-for="(item,idx) in pictograms.warning" :key="idx">
+                                                        {{item.pictogram_name}}</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <!-- 성분 추가 컴포넌트 -->
                                         <!-- @발생이벤트명="실행할 메소드" -->
-                                        <ingredient v-for="(item,idx) in ingredient_count" ref="child"></ingredient>
+                                        <ingredient v-for="(item,idx) in ingredient_count" :key="idx" ref="child"></ingredient>
                                         <!--  부모에게서 자식에게 넘겨준 props가 아닐경우에는 -->
                                         <!-- 부모에서 자식 컴포넌트의 요소(data,methods등)을 사용하기 위해 ref사용한다-->
                                         <!-- <button  type="button">추가</button>
@@ -304,10 +347,12 @@
                                         <button  type="button">확인</button> -->
                                         <div class="form-group row">
                                             <div class="col-sm-4 col-sm-offset-2">
-                                                <button class="btn btn-white btn-sm" type="button" @click="increaseIngredient">추가</button>
-                                                <button class="btn btn-white btn-sm" type="button" @click="decreaseIngredient">제거</button>
+                                                <button class="btn btn-white btn-sm" type="button"
+                                                    @click="increaseIngredient">추가</button>
+                                                <button class="btn btn-white btn-sm" type="button"
+                                                    @click="decreaseIngredient">제거</button>
                                                 <button class="btn btn-primary btn-sm" type="button"
-                                                @click="trasTest">테스트용 확인</button>
+                                                    @click="trasTest">테스트용 확인</button>
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
@@ -320,21 +365,21 @@
                                         </div>
                                     </form>
                                     <!--  -->
-                                     <!-- 파일 전송을 위한 타입지정 필수 -->
-                                     <form enctype="multipart/form-data" ref="imageForm">
+                                    <!-- 파일 전송을 위한 타입지정 필수 -->
+                                    <form enctype="multipart/form-data" ref="imageForm">
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품
                                                 이미지</label>
                                             <!-- 선택한 파일의 값을 읽어오는 것은 v-on:change, 또는 v-on:inut을 이용 -->
                                             <!-- v-model을 이용하는 것은 적합하지 않다. -->
                                             <!-- 파일 전송시에는 input 태그에 반드시 name속성을 설정해야 한다. -->
                                             <!-- 미설정시에는 서버로 아무 것도 넘어가지X -->
-                                            <div class="col-sm-10"><input type="file" class="form-control" name="productImage" ref="product_image"
-                                                    ></div>
+                                            <div class="col-sm-10"><input type="file" class="form-control"
+                                                    name="productImage" ref="product_image"></div>
                                         </div>
                                     </form>
                                     <input type="button" @click="fileupload" value="파일업로드">
                                     <div class="hr-line-dashed"></div>
-                                    
+
                                     <!-- <form enctype="multipart/form-data" id="fileForm" ref="imageForm">
                                         <input type="file" id="fileInput" name="fileInput" v-on:change="fileupload">
                                         <input type="button" v-on:click="fileupload" value="파일전송">
@@ -365,8 +410,8 @@
     <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
     <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
     <!-- vue  -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
-    <script src="vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- <script src="vue.min.js"></script> -->
     <!-- axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
@@ -388,12 +433,12 @@
     <!-- <script src="https://unpkg.com/http-vue-loader"></script> -->
     <!-- 성분등록 컴포넌트 -->
     <script src="./ingredients.js"></script>
+    <!-- 픽토그램 정보 객체 -->
+    <script src="./pictograms.js"></script>
     <script>
         var vm = new Vue({
             data: {
-                ingredientsArr: [], // 성분정보 객체를 담을 배열
-                pictogramArr: [], // 픽토그램 이미지명을 담을 배열
-                hashTagArr: [],  // 해시태그명을 담응ㄹ 배열
+                pictograms: pictograms,
                 ingredient_count: 1,
                 pictogram_count: 1,
                 hashtag_count: 1,
@@ -407,54 +452,57 @@
                     warnings: '',
                     servings: 0, // 만들어
                     total_servings: 0, // 만들어
-                    ingredients: {}, // 배열? 객체?
+                    ingredientsArr: [],
                     other_ingredients: '',
-                    daily_value: '',
-                    hash_tag: '', // 만들어
-                    pictogram: {}, // 배열? 객체
+                    daily_value: '', // 이거 자식한테 있는거 아닌가?
+                    hash_tag: [],  // 해시태그명을 담을 배열
+                    pictogram: ['', '', '', '', ''], // 픽토그램 이미지명을 담을 배열
                     // like: 0,  이건 여기서 만들지 않아
                 }
             },
             methods: {
-                fileupload(){ // 파일업로드
+                picto() {
+
+                },
+                fileupload() { // 파일업로드
                     console.log(this.$refs.imageForm);
                     let form = this.$refs.imageForm;
                     let formData = new FormData(form);
 
-                    (async()=>{
-                        try{
-                            let result = await axios.post('/files/upload',formData);
+                    (async () => {
+                        try {
+                            let result = await axios.post('/files/upload', formData);
                             console.log(`결과=${result}`);
                             console.log(result.data);
-                            if(result.data.code === 200){
-                                let path =result.data.message;
+                            if (result.data.code === 200) {
+                                let path = result.data.message;
                                 // path = path.split('public');
                                 path = path.substring(6);
                                 // path = path.substring(0,path.length -1);
                                 // console.log(path.length);
-
+                                this.product.product_image = path;
                                 console.log(path);
                                 // console.log(path[0]);
-                                
-                            }else{
+
+                            } else {
                                 alert(result.data.messege);
                             }
-                        }catch(err){
+                        } catch (err) {
                             console.log(err);
                         }
                     })();
 
                 },
-                transTestImage(){
+                transTestImage() {
                     let file = this.$refs.product_image.files[0].name;
                     console.log(`imgae=${file}`)
                     // 코드 합칠 때는 중복되는 코드 활용하기(reg,validate가 겹침)
                     let validate = file.toLowerCase();
                     let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
                     let result = reg.test(validate); // 이미지 파일 확장자 확인
-                    if(result){
+                    if (result) {
                         this.product.product_image = file;
-                    }else{
+                    } else {
                         alert('이미지 파일만 등록해 주세요');
                         this.$refs.product_image.focus();
                         return false;
@@ -480,7 +528,7 @@
                                 console.log(this.pictogramArr);
                             } else {
                                 alert('픽토그램은 이미지 파일만 등록해주세요');
-                                
+
                                 return false;
                             }
                         } catch (err) {
@@ -492,29 +540,6 @@
                         if (typeof test === 'undefined') {
                             test = function () { console.log('없어') }
                         }
-
-
-                        // console.log(typeof file);
-                        // console.log(this.$refs.pictogram[i].files[0].name);
-                        // if (file !== undefined) {
-                        //     let validate = file.toLowerCase();
-                        //     let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
-                        //     let result = reg.test(validate); // 이미지 파일 확장자 확인
-                        //     console.log(result)
-                        //     if (result) {
-                        //         this.pictogramArr.push(file);
-                        //         console.log(this.pictogramArr);
-                        //     } else {
-                        //         return false;
-                        //     }
-
-
-                        // } else {
-                        //     console.log('없어')
-
-                        // }
-
-
                     }
                 },
                 trasTest() {
@@ -524,13 +549,13 @@
                     // 생성된 입력폼의 모든 객체를 -> 몇개가 생성되었는지 알아내기
                     // 배열에 집어넣기 -> arr.push()
                     let count = this.ingredient_count;
-                    let ingredientsArr = this.ingredientsArr;
+                    // let ingredientsArr = this.ingredientsArr;
                     for (var i = 0; i < count; i++) {
                         console.log('자식');
-                        let temp = this.$refs.child[i].childObj;
-                        ingredientsArr.push(temp);
+                        let ingredient = this.$refs.child[i].childObj;
+                        this.product.ingredientsArr.push(ingredient);
                     }
-                    console.log(this.ingredientsArr);
+                    console.log(this.product.ingredientsArr);
                     console.log('결과');
 
                 },
@@ -583,41 +608,43 @@
                         this.pictogram_count--; // 픽토그램 입력창의 개수 감소
                     }
                 },
-                checkForm(){
-                    
+                servings(){
+                    this.product.servings = this.$refs.servings;
+                },
+                total_servings(){
+                    this.product.total_servings = this.$refs.total_servings;
+                },
+                checkForm() {
+
+
                 }
-                // productImage(event) { // 파일 확장자 체크용
-                //     let file = event.target;
-                //     file = file.files[0].name;
-                //     let validate = file.toLowerCase();
-                //     let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
-                //     let result = reg.test(validate); // 이미지 파일 확장자 확인
-                //     console.log(result)
-                //     if (result) {
-                //         return true;
-                //     } else {
-                //         alert('이미지 파일만 등록해주세요.'); // 파일 확장자가 맞지 않을 경우
-                //         return false;
-                //     }
-
-                // }
-
-            },
-            filters: {
-
-
-
-            },
-            computed: {
-
-
             },
             components: {
                 // 'ingredient': httpVueLoader('./AddIngredient.vue')
                 'ingredient': ingredient
+            },
+            created(){
+                // console.log('created')
+                // 데이터 받는 코드보다 앞쪽에
+                // 콘솔에 로그 찍으니까 데이터가 안 넘어오는 현상 발생
+                // 앞으로는 먼저 콘솔 찍지 말 것!
+                (async()=>{
+                    try{
+                        let result = await axios.get('/pictograms');
+                        console.log(result);
+                    }catch(err){
+                        console.log(err);
+                    }
+                })();
+                // axios.get('/pictograms')
+                // .then((result)=>{
+                //     console.log(result)
+                // })
+                // .catch((err)=>{
+                //     console.log(err)
+                // })
             }
         }).$mount('#vm');
-        Vue.config.devtools = true;
     </script>
 </body>
 
