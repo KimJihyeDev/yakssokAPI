@@ -539,7 +539,7 @@
                     let formData = new FormData(form);
 
                     (async () => {
-                        try{    
+                        try{     // 파일 업로드
                             let result = await axios.post('/files/upload', formData);
                             console.log(`결과=${result}`);
                             console.log(result.data);
@@ -549,14 +549,14 @@
                                 // path = path.split('public');
                                 path = path.substring(6);
                                 this.product.product_image = path;
-                                console.log(`내가 원하는결과 ${this.product.product_image}`)
-                                console.log(path);
 
-                                console.log('상품등록 요청 보냄')
+                                // 상품 등록
                                 result = await axios.post('/products', this.product);
                                 console.log(result);
-                                if(result.status === 200){
+                                if(result.data.code === 201){
                                     console.log('등록성공');
+                                }else if (result.data.code === 409){
+                                    alert('이미 등록된 상품입니다.');
                                 }
                             } else {
                                 alert(result.data.messege);
