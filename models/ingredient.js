@@ -13,10 +13,6 @@ module.exports =(sequelize,DataTypes) => {
             type:DataTypes.INTEGER,
             allowNull:false,
         },
-        other_ingredients:{ // 기타 성분
-            type:DataTypes.TEXT,
-            allowNull:false,
-        },
     },{
         timestamps:true,
         paranoid:true

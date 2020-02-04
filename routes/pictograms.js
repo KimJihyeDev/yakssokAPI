@@ -9,8 +9,10 @@ const Pictogram = models.Pictogram;
 // 모든 픽토그램의 정보 읽어오기
 router.get('/',async(req,res)=>{
     try{
-        let result = await Pictogram.findAll();
-        res.json(result);
+        let result = await Pictogram.findAll({
+            order:[['pictogram_name','ASC']]
+        });
+        res.json(result); // 리턴값은 배열(json들어있는 배열)
     }catch(err){
         console.log(err);
     }
@@ -23,7 +25,6 @@ router.post('/',async(req,res)=>{
         console.log('요청옴')
         // pictogram_type: req.body.pictogram_type,
         let result = await Pictogram.create({
-            type: req.body.type,
             pictogram_name: req.body.pictogram_name,
             image_path: req.body.image_path
         })

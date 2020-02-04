@@ -16,7 +16,7 @@ const router = express.Router();
 // multypart 방식으로 파일업로드
 // 제품 이미지 업로드
 router.post('/upload',(req,res)=>{
-
+  console.log('이미지 업로드 요청들어옴')
   let form = new multiparty.Form({
     autoFiles:false, // 요청이 들어오면 파일을 자동으로 저장할지 설정
     // uploadDir: 'uploads', // 파일이 저장되는 경로
@@ -31,7 +31,8 @@ router.post('/upload',(req,res)=>{
     // productImage input객체의 name 속성에서 정한 이름
     // file객체에 productImage이름으로 배열이 생성되고 그 안에 객체가 들어있다.
     let path = files.productImage[0].path;
-    console.log(files);
+    console.log('파일정보출력')
+    // console.log(files);
 
     return res.json({
       code:200,

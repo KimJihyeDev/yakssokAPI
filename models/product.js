@@ -3,7 +3,7 @@ module.exports=(sequelize,DataTypes)=>{
     // 해시태그는 N:M 관계 테이블로 따로 작성
     return sequelize.define('product',{
       
-        parent_cetegory:{ // 제품 카테고리(상위)
+        parent_category:{ // 제품 카테고리(상위)
             type:DataTypes.INTEGER,
             allowNull:false,
         },
@@ -32,6 +32,10 @@ module.exports=(sequelize,DataTypes)=>{
             allowNull:false,
         },
         suggested_use:{ // 복용법
+            type:DataTypes.TEXT,
+            allowNull:false,
+        },
+        other_ingredients:{ // 기타성분
             type:DataTypes.TEXT,
             allowNull:false,
         },
