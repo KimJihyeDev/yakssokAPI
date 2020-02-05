@@ -338,8 +338,8 @@
                                                     @click="increaseIngredient">추가</button>
                                                 <button class="btn btn-white btn-sm" type="button"
                                                     @click="decreaseIngredient">제거</button>
-                                                <button class="btn btn-primary btn-sm" type="button"
-                                                    @click="trasTest">테스트용 확인</button>
+                                                <!-- <button class="btn btn-primary btn-sm" type="button"
+                                                    @click="transTest">테스트용 확인</button> -->
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
@@ -499,14 +499,13 @@
                     }
 
                 },
-                trasTest() {
+                transTest() {
                     // 전송버튼에 넣을 기능 테스트(나중에 코드 옮기기)
                     // 지금하려는 것
                     // 전송버튼을 누르면
                     // 생성된 입력폼의 모든 객체를 -> 몇개가 생성되었는지 알아내기
                     // 배열에 집어넣기 -> arr.push()
                     let count = this.ingredient_count;
-                    // let ingredientsArr = this.ingredientsArr;
                     for (var i = 0; i < count; i++) {
                         console.log('자식');
                         let ingredient = this.$refs.child[i].childObj;
@@ -539,7 +538,7 @@
                     let formData = new FormData(form);
 
                     (async () => {
-                        try{     // 파일 업로드
+                        try{    
                             let result = await axios.post('/files/upload', formData);
                             console.log(`결과=${result}`);
                             console.log(result.data);
@@ -547,16 +546,27 @@
                                 let path = result.data.message;
                                 // computed를 사용해서 경로를 처리해도 될 듯.
                                 // path = path.split('public');
-                                path = path.substring(6);
-                                this.product.product_image = path;
+                                path = path.split('\\')
+                                this.product.product_image = path[3];
+                                console.log(`내가 원하는결과 ${this.product.product_image}`)
+                                console.log(path[3]);
+                                
+                                // 성분 배열 추가
+                                // 성분창 추가만 하고 값을 입력 안 한 경우도 나중에 처리하기
+                                // (아직 처리 안 함)
+                                let count = this.ingredient_count;
+                                for (var i = 0; i < count; i++) {
+                                    let ingredient = this.$refs.child[i].childObj;
+                                    this.product.ingredientsArr.push(ingredient);
+                                }
+                                console.log(this.product.ingredientsArr);
+                                console.log('결과');
 
-                                // 상품 등록
+                                console.log('상품등록 요청 보냄')
                                 result = await axios.post('/products', this.product);
                                 console.log(result);
-                                if(result.data.code === 201){
+                                if(result.status === 200){
                                     console.log('등록성공');
-                                }else if (result.data.code === 409){
-                                    alert('이미 등록된 상품입니다.');
                                 }
                             } else {
                                 alert(result.data.messege);

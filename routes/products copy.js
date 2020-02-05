@@ -27,8 +27,6 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/',async(req,res,next)=>{
-    console.log(`성분확인`)
-    console.log(req.body.ingredientsArr);
 
     try{
         console.log('리퀘스트객체'+req);
@@ -90,21 +88,7 @@ router.post('/',async(req,res,next)=>{
                     // 다음은 성분테이블에 정보를 넣자
                     // ingredientsArr로 배열 타입이다
                     // productId 가 foreign key
-                    // 이것도 반복 돌아야 함
-                    let ingredient = req.body.ingredientsArr;
-                    console.log(`입력받은 성분`)
-                    console.log(ingredient);
-                    for(idx in ingredient){
-                        let result = await Ingredient.create({
-                            ingredient:ingredient[idx].ingredient,
-                            per_serving:ingredient[idx].amountsPerServing,
-                            daily_value:ingredient[idx].dailyValue,
-                            productId:productId
-                        })
-                        console.log(`성분정보 생성`);
-                        console.log(result);
-                    }
-                    // 이거 다 하고서 클라이언트에 응답보내기
+
             }else {
                 res.json({
                     code:409,
