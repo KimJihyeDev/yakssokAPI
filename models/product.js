@@ -44,7 +44,7 @@ module.exports=(sequelize,DataTypes)=>{
             allowNull:false,
         },
         servings:{   // 1회 제공량
-            type:DataTypes.INTEGER,
+            type:DataTypes.STRING(20),
             allowNull:false,
         },
         total_servings:{  // 총 제공량
