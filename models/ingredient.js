@@ -10,8 +10,8 @@ module.exports =(sequelize,DataTypes) => {
             allowNull:false,
         },
         daily_value:{ // %영양소기준치
-            type:DataTypes.INTEGER,
-            allowNull:false,
+            type:DataTypes.STRING(20),
+            allowNull:true,
         },
     },{
         timestamps:true,

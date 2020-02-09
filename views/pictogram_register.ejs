@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>제품 등록</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <link href="css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div id="vm">
+        <div id="wrapper">
+            <%- include('navigation') %>
+            <div id="page-wrapper" class="gray-bg ">
+                <div class="row wrapper border-bottom white-bg page-heading">
+                    <div class="col-lg-10">
+                        <h2>픽토그램 등록 화면</h2>
+                    </div>
+                    <div class="col-lg-2">
+
+                    </div>
+                </div>
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox ">
+                                <div class="ibox-title">
+                                    <h5>All form elements <small>With custom checbox and radion elements.</small></h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <i class="fa fa-wrench"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-user">
+                                            <li><a href="#" class="dropdown-item">Config option 1</a>
+                                            </li>
+                                            <li><a href="#" class="dropdown-item">Config option 2</a>
+                                            </li>
+                                        </ul>
+                                        <a class="close-link">
+                                            <i class="fa fa-times"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <form method="post" autocomplete="off">
+                                        <div class="form-group  row"><label
+                                                class="col-sm-2 col-form-label">픽토그램명</label>
+
+                                            <div class="col-sm-10"><input type="text" class="form-control"
+                                                    ref="pictogram_name" name="pictogram_name"></div>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group  row">
+                                            <label class="col-sm-2 col-form-label">픽토그램</label>
+                                            <div class="col-sm-10"><input type="file" class="form-control"
+                                                    ref="image_path" name="image_path"
+                                                    placeholder="픽토그램 폴더에서 이미지 파일을 선택해 주세요"></div>
+                                        </div>
+                                        <div class="form-group row"><label class="col-sm-3 col-form-label text-navy">이미지
+                                                파일만 등록해 주세요.</label>
+                                            <div class="col-sm-9">
+                                                <div class="row">
+                                                    <div class="col-md-2"><input type="button" placeholder=" .col-md-2"
+                                                            class="btn btn-default btn-sm" value="전송"
+                                                            @click="submitForm"></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            10GB of <strong>250GB</strong> Free.
+        </div>
+        <div>
+            <strong>Copyright</strong> Example Company &copy; 2014-2018
+        </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <!-- vue  -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+    <script src="vue.min.js"></script>
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="js/inspinia.js"></script>
+    <script src="js/plugins/pace/pace.min.js"></script>
+
+    <!-- iCheck -->
+    <script src="js/plugins/iCheck/icheck.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+    <script>
+        var vm = new Vue({
+            data: {
+                pictogram_type: [
+                    '보관방법', '복용법/복용횟수', '제형', '주의사항', '경고'
+                ],
+                pictogram: {}, // 픽토그램 정보를 담을 객체
+
+            },
+            methods: {
+
+                transTestImage() {
+                    let file = this.$refs.product_image.files[0].name;
+                    console.log(`imgae=${file}`)
+                    let validate = file.toLowerCase();
+                    let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
+                    let result = reg.test(validate); // 이미지 파일 확장자 확인
+                    if (result) {
+                        this.product.product_image = file;
+                    } else {
+                        alert('이미지 파일만 등록해 주세요');
+                        this.$refs.product_image.focus();
+                        return false;
+                    }
+
+                },
+                checkForm() {
+                    if (this.$refs.pictogram_name.value === '') {
+                        alert('픽토그램 이름을 입력해 주세요');
+                        this.$refs.pictogram_name.focus();
+                        return false;
+                    } else if (this.$refs.image_path.value === '') {
+                        alert('픽토그램 이미지를 선택해주세요.');
+                        this.$refs.image_path.focus();
+                        return false;
+                    } else {
+                        file = this.$refs.image_path.files[0].name;
+                        console.log('file=' + file);
+                        let validate = file.toLowerCase();
+                        let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
+                        let result = reg.test(validate); // 이미지 파일 확장자 확인
+                        console.log(result)
+                        if (result) {
+                            this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
+                            this.pictogram.image_path = file;
+                            console.log(`전송객체: ${this.pictogram}`);
+                            console.log(this.pictogram);
+                        } else {
+                            alert('이미지 파일만 등록해주세요');
+                            return false;
+                        }
+                    }
+                },
+                submitForm() {
+
+                    if (this.$refs.pictogram_name.value === '') {
+                        alert('픽토그램 이름을 입력해 주세요');
+                        this.$refs.pictogram_name.focus();
+                        return false;
+                    } else if (this.$refs.image_path.value === '') {
+                        alert('픽토그램 이미지를 선택해주세요.');
+                        this.$refs.image_path.focus();
+                        return false;
+                    } else {
+                        file = this.$refs.image_path.files[0].name;
+                        console.log('file=' + file);
+                        let validate = file.toLowerCase();
+                        let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
+                        let result = reg.test(validate); // 이미지 파일 확장자 확인
+                        console.log(result)
+                        if (result) {
+                            this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
+                            this.pictogram.image_path = file;
+                            (async () => {
+                                try {
+                                    let result = await axios.post('/pictograms', this.pictogram);
+                                    console.log(result);
+                                    if (result.data.code === 201) {
+                                        alert('등록 성공');
+                                        location.reload(); // alert 후 reload처리
+                                    } else {
+                                        alert(`등록 실패`);
+                                    }
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                            })();
+                        } else {
+                            alert('이미지 파일만 등록해주세요');
+                            return false;
+                        }
+                    }
+                }
+            },
+
+        }).$mount('#vm');
+    </script>
+</body>
+
+</html>

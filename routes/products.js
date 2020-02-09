@@ -24,16 +24,35 @@ router.get('/', async (req, res, next) => {
 });
 
 // 단일 상품 조회
-// 3개의 테이블에서 데이터 조회해올 것
 router.get('/:id', async(req,res) => {
+    // 클라이언트에 전송할 객체
+    let resultObj = {
+        product_ingredients:[],
+        pictograms:[],
+    }
     try{
-        let result = await Product.findOne({
-            where:{id:req.params.id}  // request의 parameter를 가져오기
+        // 상품, 성분 정보 가져오기
+        let result = await Product.findAll({
+            include: { model: Ingredient },
+            where: { id: req.params.id }
         })
-        console.log(`단일상품조회`)
+        console.log(`join 결과`)
         console.log(result);
-        let test = await result;
-        res.json(test);
+        resultObj.product_ingredients = result;
+        console.log(`배열입력확인`)
+        console.log(resultObj.product_ingredients);
+        
+        result = await Product.findOne({  
+            where:{id: req.params.id }
+        });
+        // 픽토그램 조회
+        const pictograms = await result.getPictograms();
+        console.log(`픽토그램결과`)
+        console.log(pictograms);
+        resultObj.pictograms = pictograms;
+        
+        res.json(resultObj);
+        
     }catch(err){
         console.log(err);
     }
@@ -120,5 +139,14 @@ router.post('/',async(req,res,next)=>{
         console.log(err);
     }
 })
+
+// router.get('/test',async(req,res)=>{
+//     try{
+//         const 
+
+//     }catch(err){
+//         console.log(err);
+//     }
+// })
 
 module.exports = router;
