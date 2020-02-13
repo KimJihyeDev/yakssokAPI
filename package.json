@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nodemon ./bin/www"
   },
+  "author":"kjh",
   "dependencies": {
     "bcrypt": "^3.0.6",
     "cookie-parser": "~1.4.4",

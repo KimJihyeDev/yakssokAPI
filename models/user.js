@@ -8,13 +8,17 @@ module.exports = (sequelize,DataTypes) =>{
             unique:true,
         },
         user_pwd:{
-            type:DataTypes.STRING(20),
+            type:DataTypes.STRING(100), // 해시암호화 했으므로 길이에 주의
             allowNull:false,
         },
         email:{
             type:DataTypes.STRING(50),
             allowNull:false,
             unique:true,
+        },
+        userstate:{ // 가입, 탈퇴 구분
+            type:DataTypes.BOOLEAN,
+            allowNull:false,
         },
         like_product:{
             type:DataTypes.STRING(100),

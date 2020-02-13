@@ -1,5 +1,3 @@
-// board_name
-// baord_desc
 module.exports =(sequelize,DataTypes) => {
 
     return sequelize.define('board',{
@@ -10,6 +8,11 @@ module.exports =(sequelize,DataTypes) => {
         desc:{
             type:DataTypes.STRING(500),
             allowNull:true,
+        },
+        useyn:{
+            type:DataTypes.BOOLEAN,
+            allowNull:true,
+            defaultValue:true 
         },
     },{
         timestamps:true,

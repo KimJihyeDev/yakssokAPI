@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
             order:[['id','DESC']], // 최신 제품 
             limit:12  // 제품 개수는 12개로 
         });
-        console.log(products);
+        // console.log(products);
         res.json(products);
     } catch (err) {
         console.log(err);
@@ -66,7 +66,7 @@ router.post('/',async(req,res,next)=>{
 
     try{
         let result = await Product.findOrCreate({
-            where:{product_name:req.body.product_name},
+            where:{ product_name:req.body.product_name },
             defaults: {
                 parent_category: req.body.parent_category,
                 child_category:req.body.child_category,
