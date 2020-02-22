@@ -283,22 +283,20 @@
 
             },
             methods: {
-
-                transTestImage() {
-                    let file = this.$refs.product_image.files[0].name;
-                    console.log(`imgae=${file}`)
-                    let validate = file.toLowerCase();
-                    let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
-                    let result = reg.test(validate); // 이미지 파일 확장자 확인
-                    if (result) {
-                        this.product.product_image = file;
-                    } else {
-                        alert('이미지 파일만 등록해 주세요');
-                        this.$refs.product_image.focus();
-                        return false;
-                    }
-
-                },
+                // transTestImage() {
+                //     let file = this.$refs.product_image.files[0].name;
+                //     console.log(`imgae=${file}`)
+                //     let validate = file.toLowerCase();
+                //     let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
+                //     let result = reg.test(validate); // 이미지 파일 확장자 확인
+                //     if (result) {
+                //         this.product.product_image = file;
+                //     } else {
+                //         alert('이미지 파일만 등록해 주세요');
+                //         this.$refs.product_image.focus();
+                //         return false;
+                //     }
+                // },
                 checkForm() {
                     if (this.$refs.pictogram_name.value === '') {
                         alert('픽토그램 이름을 입력해 주세요');
@@ -326,6 +324,10 @@
                         }
                     }
                 },
+                clearForm(){
+                    this.$refs.pictogram_name = '';
+                    this.$refs.image_path = '';
+                },
                 submitForm() {
 
                     if (this.$refs.pictogram_name.value === '') {
@@ -352,7 +354,7 @@
                                     console.log(result);
                                     if (result.data.code === 201) {
                                         alert('등록 성공');
-                                        location.reload(); // alert 후 reload처리
+                                        // location.reload(); // alert 후 reload처리
                                     } else {
                                         alert(`등록 실패`);
                                     }

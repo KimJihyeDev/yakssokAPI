@@ -20,10 +20,6 @@ module.exports = (sequelize,DataTypes) =>{
             type:DataTypes.BOOLEAN,
             allowNull:false,
         },
-        like_product:{
-            type:DataTypes.STRING(100),
-            allowNull:true
-        }
     },{
         // temestamps는 테이블에 createdAt, updatedAt컬럼을 자동생성하고
         // 데이터의 생성, 수정 일자를 자동으로 체크해준다.

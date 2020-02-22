@@ -27,6 +27,8 @@ db.Ingredient = require('./ingredient')(sequelize,Sequelize);
 db.Pictogram = require('./pictogram')(sequelize,Sequelize);
 db.HashTag = require('./hashtag')(sequelize,Sequelize);
 db.Temp = require('./temp')(sequelize,Sequelize);
+db.Room = require('./room')(sequelize, Sequelize);
+db.Chat = require('./chat')(sequelize, Sequelize);
 
 // 테이블 간의 관계를 정의
 
@@ -51,6 +53,9 @@ db.Pictogram.belongsToMany(db.Product,{through:'product_pictograms'});
 db.Product.belongsToMany(db.HashTag,{through:'product_hashtags'});
 db.HashTag.belongsToMany(db.Product,{through:'product_hashtags'});
 
+// roo과 chat 간의 1:1 관계 설정
+db.Room.hasOne(db.Chat, { foreignKey: 'room_id', targetKey: 'id' });
+db.Chat.belongsTo(db.Room, { foreignKey: 'room_id', targetKey: 'id' });
 
 // DB관리객체 모듈 출력
 module.exports = db;

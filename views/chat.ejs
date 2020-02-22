@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <form id="chatform">
+        <div class="container" id="vm">
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-2">User</div>
+                <div class="col-4"><input type="text" id="userInput" /></div>
+            </div>
+            <div class="row">
+                <div class="col-2">Message</div>
+                <div class="col-4"><input type="text" id="messageInput" /></div>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-6">
+                    <input type="submit" id="sendButton" value="Send Message" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+
+
+    <script src="/js/jquery-3.1.1.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+
+    <!-- vue  -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- 이쪽은 클라이언트 사이드이다. -->
+    <!-- 클라이어트 라이브러리는 script tag의 src 어트리뷰트값으로 “/socket.io/socket.io.js”을 지정하면 된다. 
+  실제 path에 socket.io.js 파일을 배치할 필요는 없다. 
+  그 이유는 socket.io가 서버 기동 시에 socket.io.js 라이브러리를 자동 생성해 주기 때문이다. -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        // . io는 socket.io 패키지를 import한 변수고, (server.js, 즉 서버사이드에서 사용)
+        // socket은 커넥션이 성공했을 때 커넥션에 대한 정보를 담고 있는 변수입니다. 
+
+        //   var socket = io.connect(); 
+        // 관리자는 채팅방을 선택할 수 있어야 한다.
+        // var socket = io.connect('/room');
+        var socket = io.connect('/chat');
+
+
+        // 클라이언트 사이드
+
+        //서버 브로드 캐스팅 메시징 수신처리
+        // appendMessage함수를 호출하여 서버의 메시지를 브라우저에 출력
+        //   socket.on('clientmessage', function(nick,message) {
+        //     console.log('Client received message:',nick, message);
+        //     appendMessage(nick,message);
+        //   });
+        socket.on('chat', (id, message) => {
+            console.log(`${id}님의 ${message} `);
+        })
+
+
+
+        // 서버로부터 받은 메시지를 브라우저에 출력하기
+        //메시징 목록에 추가하기
+        function appendMessage(nick, message) {
+            // replace를 사용한 정규식 처리 &amp는 <>를 처리하는 이스케이프 문자
+            // var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            var msg = message.replace(/\\/g, '안녕');
+            var encodedMsg = nick + " says " + msg;
+            var li = document.createElement("li");
+            li.textContent = encodedMsg;
+            document.getElementById("messagesList").appendChild(li);
+        }
+        //서버 로깅 메시지 수신처리
+        socket.on('log', function (array) {
+            console.log.apply(console, array);
+        });
+
+
+        //전송버튼 클릭 이벤트
+        // form 이 submit 이벤트를 일으킨다
+        // User라고 써있는 input의 value가 nick으로
+        // Message라고 써있는 input의 value가 message가 되어
+        //  sendMessage함수를 호출(서버에 메시지 전송)
+        // 전송 후 Message의 input 초기화 & 포커스
+        $('#chatform').submit(function () {
+            var nick = $('#userInput').val();
+            var message = $('#messageInput').val();
+
+            sendMessage(nick, message);
+            $('#messageInput').val('');
+            $('#messageInput').focus();
+            return false;
+        });
+
+        // 채팅 메시징 서버 전송
+        function sendMessage(nick, message) {
+            console.log('Client sending message: ', nick, message);
+            socket.emit('1', nick, message);
+        }
+
+
+        $(document).ready(function () {
+            $('#userInput').focus();
+        });
+    </script>
+    <script>
+        socket.on('welcome', (id) => {
+            console.log(`운영자입니다. 소켓:${id}`);
+            // 운영자의 id = 0 으로 고정
+            socket.emit('setUser', id, 0);
+            console.log('setuser일으킴')
+        })
+
+        socket.on('join', (message) => {
+            console.log(message)
+        })
+
+        socket.on('join', (message) => {
+            console.log('채팅방에 가입')
+            console.log(message)
+            socket.emit('hi', '채팅가입했어요');
+        })
+        const vm = new Vue({
+            created() {
+                // socket.on('welcome', (id) => {
+                //     console.log(`운영자입니다. 소켓:${ id }`);
+                //     // 운영자의 id = 0 으로 고정
+                //     socket.emit('setUser', id, '0');
+                //     console.log('setuser일으킴')
+                // })
+            }
+
+        }).$mount('#vm');
+
+
+    </script>
+</body>
+
+</html>

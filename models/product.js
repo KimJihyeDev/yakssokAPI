@@ -55,7 +55,7 @@ module.exports=(sequelize,DataTypes)=>{
         //     type:DataTypes.STRING(50),
         //     allowNull:true,
         // },
-        like:{ // 좋아요 수
+        rating:{ // 별점
             type:DataTypes.INTEGER,
             allowNull:true,
             defaultValue:0 // default 설정이 적용되는지 확인

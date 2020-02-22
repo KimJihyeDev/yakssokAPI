@@ -15,22 +15,27 @@
     <link href="css/style.css" rel="stylesheet">
 
     <link href="css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
-
+    <style>
+        [v-clock] {
+          display: none;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="vm">
+    <div id="vm" v-cloak>
         <div id="wrapper">
             <%- include('navigation') %>
             <div id="page-wrapper" class="gray-bg ">
-                <div class="row wrapper border-bottom white-bg page-heading">
+                <%- include('header') %>
+                <!-- <div class="row wrapper border-bottom white-bg page-heading">
                     <div class="col-lg-10">
                         <h2>픽토그램 등록 화면</h2>
                     </div>
                     <div class="col-lg-2">
 
                     </div>
-                </div>
+                </div> -->
                 <div class="wrapper wrapper-content animated fadeInRight">
                     <div class="row">
                     </div>
@@ -83,7 +88,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -97,7 +101,6 @@
             <strong>Copyright</strong> Example Company &copy; 2014-2018
         </div>
     </div>
-
     </div>
     </div>
     </div>
@@ -109,8 +112,7 @@
     <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
     <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
     <!-- vue  -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
-    <script src="vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <!-- axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
@@ -131,29 +133,10 @@
     <script>
         var vm = new Vue({
             data: {
-                pictogram_type: [
-                    '보관방법', '복용법/복용횟수', '제형', '주의사항', '경고'
-                ],
+                title: '픽토그램 등록 화면',
                 pictogram: {}, // 픽토그램 정보를 담을 객체
-
             },
             methods: {
-
-                transTestImage() {
-                    let file = this.$refs.product_image.files[0].name;
-                    console.log(`imgae=${file}`)
-                    let validate = file.toLowerCase();
-                    let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
-                    let result = reg.test(validate); // 이미지 파일 확장자 확인
-                    if (result) {
-                        this.product.product_image = file;
-                    } else {
-                        alert('이미지 파일만 등록해 주세요');
-                        this.$refs.product_image.focus();
-                        return false;
-                    }
-
-                },
                 checkForm() {
                     if (this.$refs.pictogram_name.value === '') {
                         alert('픽토그램 이름을 입력해 주세요');
@@ -181,6 +164,10 @@
                         }
                     }
                 },
+                clearForm() {
+                    this.$refs.pictogram_name.value = '';
+                    this.$refs.image_path.value = '';
+                },
                 submitForm() {
 
                     if (this.$refs.pictogram_name.value === '') {
@@ -191,38 +178,37 @@
                         alert('픽토그램 이미지를 선택해주세요.');
                         this.$refs.image_path.focus();
                         return false;
-                    } else {
-                        file = this.$refs.image_path.files[0].name;
-                        console.log('file=' + file);
-                        let validate = file.toLowerCase();
-                        let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
-                        let result = reg.test(validate); // 이미지 파일 확장자 확인
-                        console.log(result)
-                        if (result) {
-                            this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
-                            this.pictogram.image_path = file;
-                            (async () => {
-                                try {
-                                    let result = await axios.post('/pictograms', this.pictogram);
-                                    console.log(result);
-                                    if (result.data.code === 201) {
-                                        alert('등록 성공');
-                                        location.reload(); // alert 후 reload처리
-                                    } else {
-                                        alert(`등록 실패`);
-                                    }
-                                } catch (err) {
-                                    console.log(err);
+                    }
+                    file = this.$refs.image_path.files[0].name;
+                    console.log('file=' + file);
+                    let validate = file.toLowerCase();
+                    let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
+                    let result = reg.test(validate); // 이미지 파일 확장자 확인
+                    console.log(result)
+                    if (result) {
+                        this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
+                        this.pictogram.image_path = file;
+                        (async () => {
+                            try {
+                                let result = await axios.post('/pictograms', this.pictogram);
+                                console.log(result);
+                                if (result.data.code === 201) {
+                                    alert('등록 성공');
+                                    this.clearForm();
+                                    // location.reload(); // alert 후 reload처리
+                                } else {
+                                    alert(`등록 실패`);
                                 }
-                            })();
-                        } else {
-                            alert('이미지 파일만 등록해주세요');
-                            return false;
-                        }
+                            } catch (err) {
+                                console.log(err);
+                            }
+                        })();
+                    } else {
+                        alert('이미지 파일만 등록해주세요');
+                        return false;
                     }
                 }
             },
-
         }).$mount('#vm');
     </script>
 </body>

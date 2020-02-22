@@ -6,19 +6,19 @@ module.exports =(sequelize,DataTypes) => {
 
     return sequelize.define('article',{
         title:{
-            type:DataTypes.STRING(100),
+            type: DataTypes.STRING(100),
             allowNull:false,
         },
         contents:{
-            type:DataTypes.STRING(500),
+            type: DataTypes.STRING(500),
             allowNull:true,
         },
         writer:{
-            type:DataTypes.STRING(500),
+            type: DataTypes.STRING(500),
             allowNull:true,
         },
         view_count:{
-            type:DataTypes.INTEGER,
+            type: DataTypes.INTEGER,
             allowNull:true,
             defaultValue:true 
         },
