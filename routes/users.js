@@ -64,7 +64,6 @@ router.post('/', async (req, res) => {
       user_id: req.body.user_id,
       user_pwd: hash,
       email: req.body.email,
-      userstate: true,
     })
     console.log('회원가입결과' + user);
     const { id } = await User.findOne({
@@ -113,7 +112,6 @@ router.post('/login', async (req,res) => {
       where: { 
         [Op.or]: [ { user_id: req.body.user_id_email },
                    { email: req.body.user_id_email }],
-        userstate: true
       }
     })
     
@@ -183,7 +181,6 @@ router.get('/profile', verifyToken, async (req,res) => {
     const user = await User.findOne({
       where: {
         user_id: req.decoded.id,
-        userstate: true
       }
     });
     console.log('결과')

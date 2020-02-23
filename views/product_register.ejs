@@ -19,6 +19,7 @@
         [v-cloak] {
             display: none;
         }
+
         .is-visible {
             visibility: hidden;
         }
@@ -30,7 +31,7 @@
         <div id="wrapper">
 
             <%- include('navigation') %>
-            
+
             <div id="page-wrapper" class="gray-bg ">
                 <%- include('header') %>
                 <!-- <div class="row wrapper border-bottom white-bg page-heading">
@@ -72,32 +73,36 @@
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품명</label>
 
                                             <div class="col-sm-10"><input type="text" class="form-control clear-form"
-                                                    v-model="product.product_name"></div>
+                                                    v-model="product.product_name" ref="product_name"></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품
                                                 상세</label>
                                             <div class="col-sm-10"><textarea v-model="product.product_desc"
-                                                    class="form-control clear-form" v-model="product.product_desc"></textarea>
+                                                    class="form-control clear-form" v-model="product.product_desc"
+                                                    ref="product_desc"></textarea>
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">복용법</label>
                                             <div class="col-sm-10"><textarea v-model="product.suggested_use"
-                                                    class="form-control clear-form" v-model="product.suggested_use"></textarea>
+                                                    class="form-control clear-form" v-model="product.suggested_use"
+                                                    ref="suggested_use"></textarea>
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group row"><label class="col-sm-2 col-form-label">주의사항
                                             </label>
                                             <div class="col-sm-10"><textarea v-model="product.warnings"
-                                                    class="form-control clear-form" v-model="product.warnings"></textarea></div>
+                                                    class="form-control clear-form" v-model="product.warnings"
+                                                    ref="warnings"></textarea></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group row"><label class="col-sm-2 col-form-label">기타성분
                                             </label>
                                             <div class="col-sm-10"><textarea v-model="product.other_ingredients"
-                                                    class="form-control clear-form" v-model="product.other_ingredients"></textarea>
+                                                    class="form-control clear-form" v-model="product.other_ingredients"
+                                                    ref="other_ingredients"></textarea>
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
@@ -107,7 +112,8 @@
                                                     <label class="col-sm-2 col-form-label">1회 제공량
                                                     </label>
                                                     <div class="col-md-4"><input type="number" placeholder="숫자만 적어주세요"
-                                                            @change="servings" class="form-control clear-form" ref="servings">
+                                                            @change="servings" class="form-control clear-form"
+                                                            ref="servings">
                                                     </div>
                                                     <label class="col-sm-2 col-form-label">전체 제공량</label>
                                                     <div class="col-md-4"><input type="number" placeholder="숫자만 적어주세요"
@@ -132,10 +138,10 @@
                                                 선택</label>
 
                                             <div class="col-sm-10">
-                                                <div><label> <input type="radio" v-model="product.child_category" class="clear-form"
-                                                            value="1"> 비타민 </label></div>
-                                                <div><label> <input type="radio" v-model="product.child_category" class="clear-form"
-                                                            value="2"> 프로바이오틱스</label></div>
+                                                <div><label> <input type="radio" v-model="product.child_category"
+                                                            class="clear-form" value="1"> 비타민 </label></div>
+                                                <div><label> <input type="radio" v-model="product.child_category"
+                                                            class="clear-form" value="2"> 프로바이오틱스</label></div>
                                             </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
@@ -147,7 +153,8 @@
                                                         <select class="form-control m-b" name="account"
                                                             v-model="product.pictogram[0]">
                                                             <option value="" disabled>선택</option>
-                                                            <option v-for="(item,idx) in pictogramArr" :key="idx" class="clear-form">
+                                                            <option v-for="(item,idx) in pictogramArr" :key="idx"
+                                                                class="clear-form">
                                                                 {{item.pictogram_name}}</option>
                                                         </select>
                                                     </div>
@@ -155,7 +162,8 @@
                                                         <select class="form-control m-b" name="account"
                                                             v-model="product.pictogram[1]">
                                                             <option value="" disabled>선택</option>
-                                                            <option v-for="(item,idx) in pictogramArr" :key="idx" class="clear-form">
+                                                            <option v-for="(item,idx) in pictogramArr" :key="idx"
+                                                                class="clear-form">
                                                                 {{item.pictogram_name}}</option>
                                                         </select>
                                                     </div>
@@ -163,7 +171,8 @@
                                                         <select class="form-control m-b" name="account"
                                                             v-model="product.pictogram[2]">
                                                             <option value="" disabled>선택</option>
-                                                            <option v-for="(item,idx) in pictogramArr" :key="idx" class="clear-form">
+                                                            <option v-for="(item,idx) in pictogramArr" :key="idx"
+                                                                class="clear-form">
                                                                 {{item.pictogram_name}}</option>
                                                         </select>
                                                     </div>
@@ -171,7 +180,8 @@
                                                         <select class="form-control m-b" name="account"
                                                             v-model="product.pictogram[3]">
                                                             <option value="" disabled>선택</option>
-                                                            <option v-for="(item,idx) in pictogramArr" :key="idx" class="clear-form">
+                                                            <option v-for="(item,idx) in pictogramArr" :key="idx"
+                                                                class="clear-form">
                                                                 {{item.pictogram_name}}</option>
                                                         </select>
                                                     </div>
@@ -179,7 +189,8 @@
                                                         <select class="form-control m-b" name="account"
                                                             v-model="product.pictogram[4]">
                                                             <option value="" disabled>선택</option>
-                                                            <option v-for="(item,idx) in pictogramArr" :key="idx" class="clear-form">
+                                                            <option v-for="(item,idx) in pictogramArr" :key="idx"
+                                                                class="clear-form">
                                                                 {{item.pictogram_name}}</option>
                                                         </select>
                                                     </div>
@@ -190,17 +201,18 @@
                                         <div class="hr-line-dashed"></div>
                                         <!-- 성분 추가 시작 -->
                                         <div class="form-group row" v-for="(item,idx) in count">
-                                            <div class="col-sm-12" >
+                                            <div class="col-sm-12">
                                                 <div class="row">
-                                                    <label class="col-sm-1 col-form-label is-visible"
-                                                        ref="label1">성분명
+                                                    <label class="col-sm-1 col-form-label is-visible" ref="label1">성분명
                                                     </label>
                                                     <div class="col-md-3"><input type="text" placeholder="성분명"
-                                                            class="form-control ingredients ingredient clear-form"></div>
+                                                            class="form-control ingredients ingredient clear-form">
+                                                    </div>
                                                     <label class="col-sm-1 col-form-label is-visible"
                                                         ref="label2">함유량</label>
                                                     <div class="col-md-3"><input type="text" placeholder="함량"
-                                                            class="form-control ingredients per_servings clear-form"></div>
+                                                            class="form-control ingredients per_servings clear-form">
+                                                    </div>
                                                     <label class="col-sm-1 col-form-label is-visible"
                                                         ref="label3">영양소</label>
                                                     <div class="col-md-3"><input type="number" placeholder="영양"
@@ -231,7 +243,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-4 col-sm-offset-2">
                                             <button class="btn btn-warning btn-sm" type="reset">취소</button>
-                                            <button class="btn btn-warning btn-sm" type="reset" @click="test">test</button>
+                                            <!-- <button class="btn btn-warning btn-sm" type="reset" @click="test">test</button> -->
                                             <button class="btn btn-primary btn-sm" type="button"
                                                 @click="submitForm">등록</button>
                                         </div>
@@ -301,10 +313,10 @@
                 pictogramArr: [] // 서버로 부터 받은 전체 픽토그램 배열
             },
             methods: {
-                test() { 
+                test() {
                     // // 배열로 전달해 주는게 더 편하지만
                     const arr = document.getElementsByClassName('form-control');
-                    for(idx in arr){
+                    for (idx in arr) {
                         arr[idx].value = '';
                     }
                 },
@@ -319,69 +331,77 @@
                     this.$refs.product_image.value = '';
                     this.product.parent_category = '';
                     this.product.child_category = '';
-                   
 
-                    for(idx in this.product.pictogram){
+
+                    for (idx in this.product.pictogram) {
                         this.product.pictogram[idx] = '';
                     }
                     // 테스트에서는 작동하는데 여기서는 제대로 작동X
                     // 제대로 작동했으면 위의 코드 필요없음
                     const arr = document.getElementsByClassName('clear-form');
-                    for(idx in arr){
+                    for (idx in arr) {
                         arr[idx].value = '';
                     }
                 },
                 submitForm() {
-                    if (this.product.product_name === '') {
-                        alert('제품이름을 입력해 주세요'); // input타입에 맞춰서 focus 설정
+                    let check = (name, ref) => {
+                        alert(`${name} 입력해주세요`);
+                        ref.focus();
+                    }
+
+                    if (!this.product.product_name) {
+                        // 반드시 this.$refs가 붙어있는 형태로 넘겨줘야 인식됨
+                        check('제품이름을', this.$refs.product_name);
                         return false;
-                    } else if (this.product.product_desc === '') {
-                        alert('제품상세를 입력해 주세요');
+                    } else if (!this.product.product_desc) {
+                        check('제품상세를', this.$refs.product_desc);
                         return false;
-                    } else if (this.product.suggested_use === '') {
-                        alert('복용법을 입력해 주세요');
+                    } else if (!this.product.suggested_use) {
+                        check('복용법을', this.$refs.suggested_use);
                         return false;
-                    } else if (this.product.warnings === '') {
-                        alert('주의사항을 입력해 주세요');
+                    } else if (!this.product.warnings) {
+                        check('주의사항을', this.$refs.warnings);
                         return false;
-                    } else if (this.product.parent_category === 0) {
-                        alert('1차 카테고리를 선택해 주세요');
+                    } else if (!this.product.other_ingredients) {
+                        check('기타성분을', this.$refs.other_ingredients);
                         return false;
-                    } else if (this.product.child_category === 0) {
-                        alert('2차 카테고리를 선택해 주세요');
+                    } else if (!this.product.servings) {
+                        check('1회 제공량을', this.$refs.servings);
                         return false;
-                    } else if (this.product.servings === 0) {
-                        alert('1회 제공량 입력해 주세요');
+                    } else if (!this.product.total_servings) {
+                        check('전체제공량을', this.$refs.total_servings);
                         return false;
-                    } else if (this.product.total_servings === 0) {
-                        alert('전체제공량 입력해 주세요');
+                    } else if (!this.product.parent_category) {
+                        check('1차 카테고리를', this.$refs.parent_category);
                         return false;
-                    } else if (this.$refs.product_image.value === '') {
-                        alert(`제품 이미지를 선택해 주세요`);
+                    } else if (!this.product.child_category) {
+                        check('2차 카테고리를', this.$refs.child_category);
                         return false;
-                    } 
-                     // elseif / if로 바꿔야
-                        // 성분값 널값 처리
-                        const ingredients = document.getElementsByClassName('ingredient');
-                        const per_servings = document.getElementsByClassName('per_servings');
-                        const daily_value = document.getElementsByClassName('daily_value');
-                        const count = this.count;
-                        for(var i = 0; i < count; i++){
-                            if(ingredients[i].value === '' || per_servings[i].value === '') {
-                                alert('성분정보를 입력해주세요');
-                                return false;
-                            } 
-                                // else if(daily_value[i].value === '') alert('값을 입력해주세요');
-                               
+                    } else if (!this.$refs.product_image.value) {
+                        check('제품 이미지를', this.$refs.product_image);
+                        return false;
+                    }
+                    // 성분값 널값 처리
+                    const ingredients = document.getElementsByClassName('ingredient');
+                    const per_servings = document.getElementsByClassName('per_servings');
+                    const daily_value = document.getElementsByClassName('daily_value');
+                    const count = this.count;
+                    for (var i = 0; i < count; i++) {
+                        if (ingredients[i].value === '' || per_servings[i].value === '') {
+                            alert('성분정보를 입력해주세요');
+                            return false;
                         }
+                        // else if(daily_value[i].value === '') alert('값을 입력해주세요');
+
+                    }
                     // 성분값 처리
-                     // 배열로 전달해 주는게 더 편하지만
+                    // 배열로 전달해 주는게 더 편하지만
                     // 나중에도 알아보기 쉬운건 객체(key가 있으니까)
                     // const ingredients = document.getElementsByClassName('ingredient');
                     // const per_servings = document.getElementsByClassName('per_servings');
                     // const daily_value = document.getElementsByClassName('daily_value');
 
-                    for(var i = 0; i < this.count; i ++){
+                    for (var i = 0; i < this.count; i++) {
                         // obj를 전역으로 선언할 경우 주의
                         // 먼저 push된 obj들의 값까지 같이 변경된다.
                         let obj = {};
@@ -466,22 +486,22 @@
                     }
                 })();
             },
-            mounted(){
+            mounted() {
                 // 클래스를 가져와서 클래스의 콜렉션이 중 최초 1개만 보이게 처리
                 let num = document.getElementsByClassName('ingredient');
-                    // length가 실제 길이보다 -1로 출력됨.
-                    num = num.length + 1;
-                    let labels = document.getElementsByClassName('is-visible')
-                    console.log(labels)
-                    console.log(labels[0])
-                    console.log(labels[1])
-                    console.log(labels[2])
-                    // 아래 코드로 hidden으로 바꿀 수 있음
-                    // labels[0].style.visibility = 'hidden';
-                    // 컬렉션이라서 forEach사용 못 하는 듯?
-                        for(var i = 0; i < 3; i++){
-                            labels[i].style.visibility = 'visible';
-                        }
+                // length가 실제 길이보다 -1로 출력됨.
+                num = num.length + 1;
+                let labels = document.getElementsByClassName('is-visible')
+                console.log(labels)
+                console.log(labels[0])
+                console.log(labels[1])
+                console.log(labels[2])
+                // 아래 코드로 hidden으로 바꿀 수 있음
+                // labels[0].style.visibility = 'hidden';
+                // 컬렉션이라서 forEach사용 못 하는 듯?
+                for (var i = 0; i < 3; i++) {
+                    labels[i].style.visibility = 'visible';
+                }
             }
         }).$mount('#vm');
     </script>

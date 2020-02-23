@@ -21,7 +21,7 @@ var productRouter = require('./routes/products');
 var fileRouter = require('./routes/files');
 var pictogramRouter = require('./routes/pictograms');
 var chatRouter = require('./routes/chat');
-var tempRouter = require('./routes/temp');
+var reviewRouter = require('./routes/review');
 
 var app = express();
 
@@ -56,8 +56,8 @@ app.use('/users', userRouter);
 app.use('/products', productRouter);
 app.use('/files', fileRouter);
 app.use('/pictograms', pictogramRouter);
-app.use('/temp', tempRouter);
 app.use('/chat', chatRouter);
+app.use('/reviews', reviewRouter);
 
 
 // catch 404 and forward to error handler

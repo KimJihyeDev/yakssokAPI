@@ -7,6 +7,9 @@ const Op = models.Sequelize.Op;
 const Product = models.Product;
 const Ingredient = models.Ingredient;
 const Pictogram = models.Pictogram; // N:M 관계를 맺은 테이블
+const Review = models.Review; // 
+const Comment = models.Comment;
+const User = models.User;
 
 
 // 메인 화면에 뿌려질 제품 리스트 가져오기
@@ -35,6 +38,34 @@ router.get('/all', async (req, res, next) => {
     }
 });
 
+// 제품 검색
+router.get('/search', async(req, res) => {
+   try {
+    const search = req.query.product;
+    console.log('제품검색')
+    console.log(search)
+    const result = await Product.findAll({
+        where: { 
+        product_name : {
+            [Op.like]: `%${search}%`
+        }
+    }
+    });
+    
+    // where: { 
+    //     product_name : {
+    //         [Op.like]: `%타이틀%`
+    //     }
+    // }
+    // [Op.like]: `%${ search }%`
+    // [Op.like]: '%'+search +'%'
+    console.log('검색결과');
+    console.log(result);
+   }catch(err) {
+     console.log(err);
+   }
+})
+
 
 // 카테고리별 제품 리스트
 // parent_category = 2일 경우에는 child_category 조회X
@@ -49,17 +80,19 @@ router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
         // 숫자가 아니라 문자열로 넘어오는데 주의
         if (req.params.parent_id === '2') {
             products = await Product.findAll({
-            where: { parent_category: req.params.parent_id },
-            order: [['id', 'DESC']],
-            offset: req.query.offSet * 12,
-            limit: 12
+                where: { 
+                    parent_category: req.params.parent_id
+                },
+                order: [['id', 'DESC']],
+                offset: req.query.offSet * 12,
+                limit: 12
             });
         } else { // 동물영양제 외의 카테고리
             products = await Product.findAll({
-            where: { parent_category: req.params.parent_id, child_category: req.params.child_id },
-            order: [['id', 'DESC']],
-            offset: req.query.offSet * 12,
-            limit: 12
+                where: { parent_category: req.params.parent_id, child_category: req.params.child_id },
+                order: [['id', 'DESC']],
+                offset: req.query.offSet * 12,
+                limit: 12
             });
         }
         // console.log(products);
@@ -70,20 +103,40 @@ router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
 });
 
 // 단일 상품 조회(3개의 테이블을 join)
-// 와일드카드 패턴이 적용되었으므로 최하단에 작성
+// 와일드카드 패턴이 적용되었으므로 최하단에 작성(같은 전송방식에만 해당. get, post, patch...)
 router.get('/:id', async (req, res) => {
-   
+    let resultObj = {};
+
     try {
         // 상품, 성분 정보 가져오기
+        // 리뷰는 여기서 가져오면X. limit와 order조건도 줘야 하므로
         let result = await Product.findAll({
-            include: [{ model: Ingredient }, { model: Pictogram }],
-            where: { id: req.params.id }
+            include: [{ model: Ingredient }, { model: Pictogram }, { model: Review }],
+            where: { id: req.params.id },
+            // order: [['id', 'DESC']] // 리뷰는 최신순으로 가져온다
+            order: [['createdAt', 'DESC']] // 리뷰는 최신순으로 가져온다
         })
         console.log(`join 결과`)
         console.log(result);
         console.log('픽토그램 확인')
         console.log(result[0].dataValues.pictograms)
 
+        // 성분 정보를 객체에 담는다
+        resultObj.productInfo = result;
+
+        // product_id를 이용하여 review의 정보를 가져온다
+        let result2 = await Review.findAll({
+            include: [{ model: User }],
+            where: { productId: req.params.id }
+        });
+        // review가 없을 때도 처리
+        // 빈 배열인지 확인
+        if (result2.length) { 
+            console.log('user_id 값')
+            console.log(result2[0].dataValues.user.user_id);
+        } else {
+            console.log('댓글이 없습니다')
+        }
         res.json(result);
 
     } catch (err) {
@@ -120,7 +173,8 @@ router.post('/', async (req, res, next) => {
                     let pictogram = req.body.pictogram;
 
                     for (idx in pictogram) {
-                        if (pictogram[idx] === '') {
+                        // null check
+                        if (!pictogram[idx]) {
                             continue;
                         } else {
                             var result = await Pictogram.findOne({
@@ -138,7 +192,7 @@ router.post('/', async (req, res, next) => {
                     console.log(productId);
 
                     for (idx in pictogramId) {
-                        sequelize.query(`INSERT INTO product_pictograms VALUES(now(),now(),${ productId },${pictogramId[idx] })`)
+                        sequelize.query(`INSERT INTO product_pictograms VALUES(now(),now(),${productId},${pictogramId[idx]})`)
                             .then((results, metadata) => {
                                 console.log(results)
                             })
