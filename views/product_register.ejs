@@ -387,7 +387,7 @@
                     const daily_value = document.getElementsByClassName('daily_value');
                     const count = this.count;
                     for (var i = 0; i < count; i++) {
-                        if (ingredients[i].value === '' || per_servings[i].value === '') {
+                        if (!ingredients[i].value || !per_servings[i].value) {
                             alert('성분정보를 입력해주세요');
                             return false;
                         }
@@ -427,8 +427,6 @@
 
                                 path = path.split('\\')
                                 this.product.product_image = path[3];
-                                console.log(`내가 원하는결과 ${this.product.product_image}`)
-                                console.log(path[3]);
 
                                 // 상품 등록 요청
                                 console.log('상품등록 요청 보냄')
@@ -439,6 +437,8 @@
                                     this.clearForm();
                                 } else if (result.data.code === 409) {
                                     alert('등록 실패. 같은 이름의 제품이 존재합니다.');
+                                } else {
+                                    alert('등록에 실패했습니다. 다시 시도해 주세요.');
                                 }
                             } else {
                                 alert(result.data.messege);

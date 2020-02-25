@@ -24,7 +24,7 @@ router.post('/upload',(req,res)=>{
     maxFilesSize: 1024 * 1024 * 5 // 파일의 최대 허용 사이즈 설정
   });
 
-  form.parse(req,(error,fields,files)=>{
+  form.parse(req, (error,fields,files)=>{
     // 파일 전송이 요청되면 이곳으로 온다.
     // 에러, 필드정보, 파일 객체가 넘어온다.
     // files는 파일 객체. 
@@ -52,7 +52,7 @@ router.post('/upload/pictograms',(req,res)=>{
     maxFilesSize: 1024 * 1024 * 5 // 파일의 최대 허용 사이즈 설정
   });
 
-  form.parse(req,(error,fields,files)=>{
+  form.parse(req,(error, fields, files)=>{
     // 파일 전송이 요청되면 이곳으로 온다.
     // 에러, 필드정보, 파일 객체가 넘어온다.
     // files는 파일 객체. 
@@ -67,6 +67,8 @@ router.post('/upload/pictograms',(req,res)=>{
     });
   })
 });
+
+
 module.exports = router;
 
 

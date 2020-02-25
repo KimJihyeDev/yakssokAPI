@@ -73,6 +73,10 @@ db.Review.belongsTo(db.Product);
 db.User.hasMany(db.Review);
 db.Review.belongsTo(db.User);
 
+// user와 comment 간의 1:N 관계 설정
+db.User.hasMany(db.Comment);
+db.Comment.belongsTo(db.User);
+
 
 
 // DB관리객체 모듈 출력

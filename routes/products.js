@@ -39,31 +39,30 @@ router.get('/all', async (req, res, next) => {
 });
 
 // 제품 검색
-router.get('/search', async(req, res) => {
-   try {
-    const search = req.query.product;
-    console.log('제품검색')
-    console.log(search)
-    const result = await Product.findAll({
-        where: { 
-        product_name : {
-            [Op.like]: `%${search}%`
-        }
+router.get('/search', async (req, res) => {
+    try {
+        const keyword = req.query.keyword;
+        console.log('제품검색')
+        console.log(keyword)
+        const result = await Product.findAll({
+            where: {
+                product_name: {
+                    [Op.like]: `%${keyword}%`
+                }
+            }
+        });
+
+        console.log('검색결과');
+        console.log(result);
+        // result.length > 1
+        res.json(result)
+        //     : res.json({
+        //         message: '검색결과가 없습니다.'
+        //     })
+
+    } catch (err) {
+        console.log(err);
     }
-    });
-    
-    // where: { 
-    //     product_name : {
-    //         [Op.like]: `%타이틀%`
-    //     }
-    // }
-    // [Op.like]: `%${ search }%`
-    // [Op.like]: '%'+search +'%'
-    console.log('검색결과');
-    console.log(result);
-   }catch(err) {
-     console.log(err);
-   }
 })
 
 
@@ -80,7 +79,7 @@ router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
         // 숫자가 아니라 문자열로 넘어오는데 주의
         if (req.params.parent_id === '2') {
             products = await Product.findAll({
-                where: { 
+                where: {
                     parent_category: req.params.parent_id
                 },
                 order: [['id', 'DESC']],
@@ -110,34 +109,59 @@ router.get('/:id', async (req, res) => {
     try {
         // 상품, 성분 정보 가져오기
         // 리뷰는 여기서 가져오면X. limit와 order조건도 줘야 하므로
-        let result = await Product.findAll({
-            include: [{ model: Ingredient }, { model: Pictogram }, { model: Review }],
+        const result = await Product.findOne({
+            include: [
+                { model: Ingredient }, 
+                { model: Pictogram }
+            ],
             where: { id: req.params.id },
-            // order: [['id', 'DESC']] // 리뷰는 최신순으로 가져온다
-            order: [['createdAt', 'DESC']] // 리뷰는 최신순으로 가져온다
         })
         console.log(`join 결과`)
         console.log(result);
         console.log('픽토그램 확인')
-        console.log(result[0].dataValues.pictograms)
+        console.log(result.dataValues.pictograms)
 
         // 성분 정보를 객체에 담는다
         resultObj.productInfo = result;
 
         // product_id를 이용하여 review의 정보를 가져온다
-        let result2 = await Review.findAll({
-            include: [{ model: User }],
-            where: { productId: req.params.id }
+        // 이 부분을 리뷰를 추가하는 부분에서 불러보자
+        // 이게 리뷰 리스트를 만드는 코드였으니 되겠지
+        // 1. 리뷰를 작성한다(reviws -> post에서 실행)
+        // 2. 작성한 리뷰를 리뷰 아래와 같이 검색한다
+        // 3. 리턴한다
+        let reviewInfo = await Review.findAll({
+            include: [
+                { model: User }, 
+                { model: Comment }
+            ],
+            where: { productId: req.params.id },
+            order: [['id', 'DESC']], // 리뷰는 최신순으로(댓글은 오름차순으로)
         });
+
+        //  가져온 User객체에서 user_id만 추출한 후 삭제
+        if (reviewInfo.length >= 1) {
+            reviewInfo.forEach(item => {
+                item.dataValues.user_id = item.dataValues.user.user_id;
+                delete item.dataValues.user
+            });
+        }
+        
+        // 삭제한 후에 review도 resultObj에 추가
+        // review가 없다면 reviewInfo 는 null?
+        resultObj.reviewInfo = reviewInfo;
+        console.log('삭제확인')
+        console.log(reviewInfo[0])
+
         // review가 없을 때도 처리
         // 빈 배열인지 확인
-        if (result2.length) { 
-            console.log('user_id 값')
-            console.log(result2[0].dataValues.user.user_id);
-        } else {
-            console.log('댓글이 없습니다')
-        }
-        res.json(result);
+        // if (reviewInfo.length > 1) {
+        //     console.log('user_id 값')
+        //     console.log(reviewInfo);
+        // } else {
+        //     console.log('댓글이 없습니다')
+        // }
+        res.json(resultObj);
 
     } catch (err) {
         console.log(err);
