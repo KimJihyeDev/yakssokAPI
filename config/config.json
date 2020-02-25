@@ -14,7 +14,7 @@
     "operatorsAliases": false
   },
   "test": {
-    "username": "root",
+    "username": "kjh@yakssock",
     "password": null,
     "database": "database_test",
     "host": "127.0.0.1",
@@ -22,17 +22,13 @@
     "operatorsAliases": false
   },
   "production": {
-    "username": "root",
+    "username": "kjh@yakssok",
     "password": "dummy",
     "database": "yakssok",
-    "host": "127.0.0.1",
+    "host": "yakssok.mysql.database.azure.com",
+    "port":3306,
     "dialect": "mysql",
-    "dialectOptions": {
-      "useUTC": false,
-      "dateStrings": true,
-      "typeCast": true
-    },
-    "timezone": "+09:00",
+    
     "operatorsAliases": false
   }
 }
