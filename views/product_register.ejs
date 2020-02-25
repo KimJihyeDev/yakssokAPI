@@ -414,12 +414,11 @@
                                 let path = result.data.message;
                                 console.log('파일 업로드가 성공해서 받은 리턴값*********');    
                                 console.log(path);
-                                
-                                path = path.split('\\')
-                                console.log('split 확인')
-                                console.log(path);
-                                console.log('이게 왜 문제인데?');
+                                // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다!!
+                                path = path.split('/')
+                                console.log('resplitplace 확인')
                                 console.log(path[3]);
+
                                 this.product.product_image = path[3];
                                 console.log('이미지확인')
                                 console.log(this.product.product_image);
