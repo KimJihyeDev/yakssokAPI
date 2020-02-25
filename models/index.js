@@ -18,6 +18,11 @@ const sequelize = new Sequelize(
     config.username,
     process.env.DB_PWD, config,
 );
+// const sequelize = new Sequelize(
+//     config.database,
+//     config.username,
+//     config.password, config,
+// );
 // DB객체에 시퀄라이즈 객체를 속성에 바인딩한다.
 db.sequelize = sequelize;
 // DB객체에 시퀄라이즈 모듈을 속성에 비인딩한다.
@@ -29,8 +34,6 @@ db.Product = require('./product')(sequelize, Sequelize);
 db.Ingredient = require('./ingredient')(sequelize, Sequelize);
 db.Pictogram = require('./pictogram')(sequelize, Sequelize);
 db.HashTag = require('./hashtag')(sequelize, Sequelize);
-db.Room = require('./room')(sequelize, Sequelize);
-db.Chat = require('./chat')(sequelize, Sequelize);
 db.Review = require('./review')(sequelize, Sequelize);
 db.Comment = require('./comment')(sequelize, Sequelize);
 
@@ -56,10 +59,6 @@ db.Pictogram.belongsToMany(db.Product, { through: 'product_pictograms' });
 // product와 hashTag 간의 N:M 관계 설정
 db.Product.belongsToMany(db.HashTag, { through: 'product_hashtags' });
 db.HashTag.belongsToMany(db.Product, { through: 'product_hashtags' });
-
-// roo과 chat 간의 1:1 관계 설정
-db.Room.hasOne(db.Chat, { foreignKey: 'room_id', targetKey: 'id' });
-db.Chat.belongsTo(db.Room, { foreignKey: 'room_id', targetKey: 'id' });
 
 // review와 comment 간의 1:N 관계 설정
 db.Review.hasMany(db.Comment);

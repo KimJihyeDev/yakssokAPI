@@ -23,12 +23,15 @@
   },
   "production": {
     "username": "kjh@yakssok",
-    "password": "dummy",
+    "password": "dirthr2=",
     "database": "yakssok",
     "host": "yakssok.mysql.database.azure.com",
-    "port":3306,
-    "dialect": "mysql",
-    
-    "operatorsAliases": false
+    "dialectOptions": {
+      "useUTC": false,
+      "dateStrings": true,
+      "typeCast": true
+    },
+    "timezone": "+09:00",
+    "dialect": "mysql"
   }
 }
