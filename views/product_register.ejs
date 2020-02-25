@@ -155,7 +155,7 @@
                                                             <option value="" disabled>선택</option>
                                                             <option v-for="(item,idx) in pictogramArr" :key="idx"
                                                                 class="clear-form">
-                                                                {{item.pictogram_name}}</option>
+                                                                {{ item.pictogram_name }}</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-md-2">
@@ -283,14 +283,14 @@
 
     <!-- iCheck -->
     <script src="js/plugins/iCheck/icheck.min.js"></script>
-    <script>
+    <!-- <script>
         $(document).ready(function () {
             $('.i-checks').iCheck({
                 checkboxClass: 'icheckbox_square-green',
                 radioClass: 'iradio_square-green',
             });
         });
-    </script>
+    </script> -->
     <script>
         var vm = new Vue({
             data: {
@@ -414,13 +414,13 @@
                     console.log(this.product.ingredientsArr)
 
                     // 이미지폼 처리
-                    let form = this.$refs.imageForm;
-                    let formData = new FormData(form);
+                    const form = this.$refs.imageForm;
+                    const formData = new FormData(form);
 
                     (async () => {
                         try {
                             let result = await axios.post('/files/upload', formData);
-                            console.log(`결과=${result}`);
+                            console.log(`상품이미지전송결과=${ result }`);
                             console.log(result.data);
                             if (result.data.code === 200) {
                                 let path = result.data.message;

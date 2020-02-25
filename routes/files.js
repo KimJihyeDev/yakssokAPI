@@ -24,19 +24,19 @@ router.post('/upload',(req,res)=>{
     maxFilesSize: 1024 * 1024 * 5 // 파일의 최대 허용 사이즈 설정
   });
 
-  form.parse(req, (error,fields,files)=>{
+  form.parse(req, (error, fields, files)=>{
     // 파일 전송이 요청되면 이곳으로 온다.
     // 에러, 필드정보, 파일 객체가 넘어온다.
     // files는 파일 객체. 
     // productImage input객체의 name 속성에서 정한 이름
     // file객체에 productImage이름으로 배열이 생성되고 그 안에 객체가 들어있다.
     let path = files.productImage[0].path;
-    console.log('파일정보출력')
-    // console.log(files);
+    console.log('파일 라우터, 입력받은 이미지정보출력')
+    console.log(path);
 
     return res.json({
       code:200,
-      message:`${path}`
+      message:`${ path }`
     });
   })
 });
@@ -63,7 +63,7 @@ router.post('/upload/pictograms',(req,res)=>{
 
     return res.json({
       code:200,
-      message:`${path}`
+      message:`${ path }`
     });
   })
 });

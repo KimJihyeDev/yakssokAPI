@@ -122,14 +122,14 @@
 
     <!-- iCheck -->
     <script src="js/plugins/iCheck/icheck.min.js"></script>
-    <script>
+    <!-- <script>
         $(document).ready(function () {
             $('.i-checks').iCheck({
                 checkboxClass: 'icheckbox_square-green',
                 radioClass: 'iradio_square-green',
             });
         });
-    </script>
+    </script> -->
     <script>
         var vm = new Vue({
             data: {
@@ -156,7 +156,7 @@
                         if (result) {
                             this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
                             this.pictogram.image_path = file;
-                            console.log(`전송객체: ${this.pictogram}`);
+                            console.log(`전송객체: ${ this.pictogram }`);
                             console.log(this.pictogram);
                         } else {
                             alert('이미지 파일만 등록해주세요');
