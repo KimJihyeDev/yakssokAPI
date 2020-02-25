@@ -413,6 +413,8 @@
                             if (result.data.code === 200) {
                                 let path = result.data.message;
                                 console.log('파일 업로드가 성공해서 받은 리턴값*********');    
+                                console.log(path);
+                                
                                 path = path.split('\\')
                                 this.product.product_image = path[3];
                                 console.log('이미지확인')
