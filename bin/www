@@ -18,7 +18,7 @@ const webSocket = require('../socket');
  * Get port from environment and store in Express.
  */
 
-//  포트를 환경변수로 만든 경우 그 환경변수를 따르고 환경변수가 없을 경우 4000번 포트를 듣는다
+// 포트를 환경변수로 만든 경우 그 환경변수를 따르고 환경변수가 없을 경우 4000번 포트를 듣는다
 // var port = normalizePort(process.env.PORT || '4000');
 var port = normalizePort(process.env.PORT || '80');
 app.set('port', port);
