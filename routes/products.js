@@ -47,14 +47,14 @@ router.get('/search', async (req, res) => {
         const result = await Product.findAll({
             where: {
                 product_name: {
-                    [Op.like]: `%${keyword}%`
+                    [Op.like]: `%${ keyword }%`
                 }
             }
         });
 
         console.log('검색결과');
         console.log(result);
-        // result.length > 1
+        // result.length > 0
         res.json(result)
         //     : res.json({
         //         message: '검색결과가 없습니다.'
@@ -68,17 +68,18 @@ router.get('/search', async (req, res) => {
 
 // 카테고리별 제품 리스트
 // parent_category = 2일 경우에는 child_category 조회X
-router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
+router.get('/categories/:parent_id/:child_id', async (req, res) => {
     try {
         console.log('리퀘스트쿼리')
         console.log(req.query.offSet)
-
+        // findAndCountAll로 전체개수를 알아내서 12개 이상이면
+        // 클라이언트에서 더보기 버튼 활성화
+        
         // and 조건은{ , }로 연결된다(Op.and 사용x)
-        var product;
         // 동물영양제 검색(id === '2')
         // 숫자가 아니라 문자열로 넘어오는데 주의
         if (req.params.parent_id === '2') {
-            products = await Product.findAll({
+            products = await Product.findAndCountAll({
                 where: {
                     parent_category: req.params.parent_id
                 },
@@ -87,14 +88,15 @@ router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
                 limit: 12
             });
         } else { // 동물영양제 외의 카테고리
-            products = await Product.findAll({
+            products = await Product.findAndCountAll({
                 where: { parent_category: req.params.parent_id, child_category: req.params.child_id },
                 order: [['id', 'DESC']],
                 offset: req.query.offSet * 12,
                 limit: 12
             });
         }
-        // console.log(products);
+        console.log('카테고리 검색 결과')
+        console.log(products);
         res.json(products);
     } catch (err) {
         console.log(err);
@@ -140,7 +142,7 @@ router.get('/:id', async (req, res) => {
         });
 
         //  가져온 User객체에서 user_id만 추출한 후 삭제
-        if (reviewInfo.length >= 1) {
+        if (reviewInfo.length > 0) {
             reviewInfo.forEach(item => {
                 item.dataValues.user_id = item.dataValues.user.user_id;
                 delete item.dataValues.user
@@ -155,7 +157,7 @@ router.get('/:id', async (req, res) => {
 
         // review가 없을 때도 처리
         // 빈 배열인지 확인
-        // if (reviewInfo.length > 1) {
+        // if (reviewInfo.length > 0) {
         //     console.log('user_id 값')
         //     console.log(reviewInfo);
         // } else {

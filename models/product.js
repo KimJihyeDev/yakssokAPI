@@ -61,6 +61,8 @@ module.exports=(sequelize,DataTypes)=>{
             defaultValue:0 // default 설정이 적용되는지 확인
         },
     },{     
+        charset: 'utf8',
+        collate: 'utf8_unicode_ci',
         timestamps: true,
         paranoid:true
     });

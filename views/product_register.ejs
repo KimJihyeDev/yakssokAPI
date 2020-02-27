@@ -12,12 +12,9 @@
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/v-cloak.css">
 
     <style>
-        [v-cloak] {
-            display: none;
-        }
-
         .is-visible {
             visibility: hidden;
         }
@@ -109,7 +106,7 @@
                                                 <div class="row">
                                                     <label class="col-sm-2 col-form-label">1회 제공량
                                                     </label>
-                                                    <div class="col-md-4"><input type="number" placeholder="숫자만 적어주세요"
+                                                    <div class="col-md-4"><input type="text" placeholder="1회 제공량"
                                                             @change="servings" class="form-control clear-form"
                                                             ref="servings">
                                                     </div>
@@ -431,7 +428,11 @@
                                 console.log(result);
                                 if (result.data.code === 200) {
                                     alert('등록성공');
-                                    this.clearForm();
+                                    // location.reload()사용하지 말고 페이지 정보 리셋시키기
+                                    // clear후 픽토그램, 성분 정보 입력에서 에러발생
+                                    // this.clearForm();
+                                    // this.count = 1;
+                                    location.reload();
                                 } else if (result.data.code === 409) {
                                     alert('등록 실패. 같은 이름의 제품이 존재합니다.');
                                 } else {
