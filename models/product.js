@@ -47,7 +47,7 @@ module.exports=(sequelize,DataTypes)=>{
             type:DataTypes.STRING(20),
             allowNull:false,
         },
-        total_servings:{  // 총 제공량
+        total_servings:{  // 총 제공량(횟수)
             type:DataTypes.INTEGER,
             allowNull:false,
         },
