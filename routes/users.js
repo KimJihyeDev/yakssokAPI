@@ -16,7 +16,12 @@ router.get('/', async (req, res, next) => {
     // 배열에 담겨져 온다.
     // [{"id":"","email":""},{...}] 형태
     res.json(user);
-  } catch (err) {
+
+  } catch(err) {
+    res.json({
+      code: 500,
+      message: '서버에서 에러가 발생했습니다.'
+    });
     console.error(err);
   }
 });
@@ -69,26 +74,20 @@ router.post('/', async (req, res) => {
     const { id } = await User.findOne({
       where: { user_id: req.body.user_id }
     });
-    console.log(`~~~`);
-    console.log(id);
 
     // 이 경우에는 뭐가 리턴될까?
     // 일단 async await 는 Promise 객체가 리턴
     // [object SequelizeInstance:user]가 리턴됨
     const token = access_token(user);
-    let time = Date.now();
-    // 토큰 삭제 판단을 위한 변수(유효기간은 토큰에서 설정)
-    time = time + 3600000;
 
     res.status(201).json({
       code: 201,
       message: `회원가입 성공`,
       token,
-      id,
-      time
+      id
     });
 
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     return res.status(500).json({
       code: 500,
@@ -101,7 +100,6 @@ router.post('/', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     // 아이디/ 이메일 사용자 정보를 조회
-    // 탈퇴회원 선별도 신경쓸 것
     // id/email 둘 다로 검색하지만 받은 정보는 1개이므로
     // 이 정보로 or 검색을 실행한다.
     console.log('리퀘스트바디')
@@ -127,19 +125,11 @@ router.post('/login', async (req, res) => {
 
         console.log('토큰확인');
         console.log(token);
-        let time = Date.now();
-        console.log('시간확인')
-        console.log(time)
-        time = time + 3600000; // 클라이언트에서 알 수 있도록 시간 설정
-        console.log('시간확인')
-        console.log(time)
-        1582047352821
         res.json({
           code: 200,
           message: '로그인 성공',
           token,
           id,
-          time
         })
       } else {
         res.json({
@@ -157,7 +147,7 @@ router.post('/login', async (req, res) => {
       })
     }
 
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     return res.statusCode(500).json({
       code: 500,
@@ -188,21 +178,23 @@ router.get('/profile', verifyToken, async (req, res) => {
     console.log('결과')
     console.log(user)
     //  비밀번호까지 전해주지X
-    const { user_id, email } = user
-    const id = user.id;
+    const { id, user_id, email } = user;
+
     if (user) {
       // 토큰 유효성 따지기 & 아이디만 조회용
-      // 파라미터가 빈객체가 아니라면 id만 건네준다
+      // 파라미터가 빈객체가 아니라면 id와 usr_id만 건네준다
       if (query === 'i') {
         return res.json({
           code: 200,
-          id: id
+          id,
+          user_id
         });
       } else {  // 프로필 조회용
         return res.json({
           code: 200,
-          user_id: user_id,
-          email: email
+          id,
+          user_id,
+          email
         });
       }
 
@@ -213,14 +205,80 @@ router.get('/profile', verifyToken, async (req, res) => {
       });
     }
 
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     res.json({
       code: 500,
       message: '서버에러'
     })
   }
-})
+});
+
+// 회원정보 수정(비밀번호, 이메일)
+// 이미 가입된 이메일일 경우 수정x
+// router.patch('/modify/:id', verifyToken, async (req, res) => {
+router.patch('/modify/:id', async (req, res) => {
+  console.log('회원정보수정')
+  const type = req.query.type;
+  console.log('비밀번호 수정 파라미터 확인', req.params.id);
+  console.log('email확인', req.body);
+
+  // reqest body parser가 제대로 동작하지 않는 오류?
+  // [Object: null prototype] { '이메일주소': '' } 형태로 body가 넘어옴
+  const obj = JSON.parse(JSON.stringify(req.body)); // req.body = [Object: null prototype] { title: 'product' }
+
+console.log(obj); // { title: 'product' }
+console.log('키를 찾자', Object.keys(obj)); // { title: 'product' }
+  try {
+    if(type === 'e') {
+      const result = await User.update({
+        email: req.body.email,
+      }, { 
+        where: { id: req.params.id }
+      });
+    console.log('이메일 업데이트 확인', result);
+
+    } else if(type === 'p') {
+      // 비밀번호 암호화 해서 비교해야 함
+      const result = User.findByPk(
+        req.body.email
+      )
+    }
+
+  } catch(err) {
+    res.json({
+      code: 500,
+      message: '서버에서 에러 발생'
+    });
+    console.log(err);
+  }
+});
+
+// 비밀번호 찾기
+router.patch('/updatePwd', verifyToken, async (req, res) => {
+  try {
+
+  } catch(err) {
+    res.json({
+      code: 500,
+      message: '서버에서 에러가 발생했습니다.'
+    });
+    console.log(err);
+  }
+});
+
+// 회원탈퇴
+router.delete('/deleteAccount', verifyToken, async (req, res) => {
+  try {
+
+  } catch(err) {
+    res.json({
+      code: 500,
+      message: '서버에서 에러 발생'
+    });
+    console.log(err);
+  }
+});
 
 
 module.exports = router;

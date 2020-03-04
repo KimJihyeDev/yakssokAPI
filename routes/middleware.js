@@ -16,16 +16,18 @@ exports.verifyToken = (req, res, next) => {
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
             console.log('만료된 토큰')
-            // status 설정 안 하자 계속 응답보내는 에러 발생. 어째서?
             return res.json({
                 code: 419,
-                message: '토큰이 만료되었습니다.'
+                message: '토큰이 만료되었습니다. 다시 로그인해 주세요.'
             });
         } else {
+            // 401에러가 난 경우는 토큰을 전송하지 않은 경우가 대부분이니 주의.
+            // 반드시 헤더에 토큰을 넣어서 보낼 것.
+            console.log('유효하지 않은 토큰');
             return res.json({
                 code: 401,
-                message: '유효하지 않은 토큰입니다.'
-            })
+                message: '유효하지 않은 토큰입니다. 다시 로그인해 주세요.'
+            });
         }
     }
 };

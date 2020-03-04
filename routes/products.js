@@ -20,7 +20,12 @@ router.get('/', async (req, res, next) => {
             limit: 12  // 제품 개수는 12개로 
         });
         res.json(products);
-    } catch (err) {
+
+    } catch(err) {
+        res.json({
+            code: 500,
+            message: '서버에서 에러 발생'
+        });
         console.log(err);
     }
 });
@@ -34,7 +39,12 @@ router.get('/all', async (req, res, next) => {
             // limit: 10
         });
         res.json(products);
+
     } catch (err) {
+        res.json({
+            code: 500,
+            message: '서버에서 에러 발생'
+        });
         console.log(err);
     }
 });
@@ -42,16 +52,28 @@ router.get('/all', async (req, res, next) => {
 // 관리자 사이트에서 제품 1개 읽어오기(수정페이지용)
 router.get('/one', async (req, res) => {
     try {
-        const result = await Product.findOne({
-            include: [
-                { model: Ingredient },
-                { model: Pictogram }
-            ],
-            where: { id: req.query.id }
-        })
+        // const result = await Product.findOne({
+        //     include: [
+        //         { model: Ingredient },
+        //         { model: Pictogram }
+        //     ],
+        //     where: { id: req.query.id }
+        // })
+        const result = await Product.findByPk(req.query.id, 
+            {
+                include: [
+                    { model: Ingredient },
+                    { model: Pictogram }
+                ],
+            });
         console.log(result);
         res.json(result);
-    } catch (err) {
+
+    } catch(err) {
+        res.json({
+            code: 500,
+            message: '서버에서 에러 발생'
+        });
         console.log(err);
     }
 });
@@ -65,7 +87,7 @@ router.get('/search', async (req, res) => {
         const result = await Product.findAll({
             where: {
                 product_name: {
-                    [Op.like]: `%${keyword}%`
+                    [Op.like]: `%${ keyword }%`
                 }
             }
         });
@@ -78,11 +100,11 @@ router.get('/search', async (req, res) => {
         //         message: '검색결과가 없습니다.'
         //     })
 
-    } catch (err) {
+    } catch(err) {
         res.json({
             code: 500,
             message: '서버에러입니다.'
-        })
+        });
         console.log(err);
     }
 })
@@ -111,11 +133,11 @@ router.patch('/modify', async (req, res) => {
             code: 200,
             message: '상품정보 수정 성공'
         });
-    } catch (err) {
+    } catch(err) {
         res.json({
             code: 500,
             message: '서버에러 발생'
-        })
+        });
         console.log(err);
     }
 });
@@ -132,7 +154,8 @@ router.delete('/delete', async (req, res) => {
             code: 200,
             message: '삭제 성공',
         });
-    } catch (err) {
+
+    } catch(err) {
         res.json({
             code: 500,
             message: '서버에러 발생'
@@ -173,7 +196,12 @@ router.get('/categories/:parent_id/:child_id', async (req, res) => {
         console.log('카테고리 검색 결과')
         console.log(products);
         res.json(products);
-    } catch (err) {
+
+    } catch(err) {
+        res.json({
+            code: 500,
+            message: '서버에서 에러 발생'
+        });
         console.log(err);
     }
 });
@@ -181,66 +209,47 @@ router.get('/categories/:parent_id/:child_id', async (req, res) => {
 // 프론트에서 단일 상품 조회(3개의 테이블을 join)
 // 와일드카드 패턴이 적용되었으므로 최하단에 작성(같은 전송방식에만 해당. get, post, patch...)
 router.get('/:id', async (req, res) => {
-    let resultObj = {};
 
     try {
         // 상품, 성분 정보 가져오기
         // 리뷰는 여기서 가져오면X. limit와 order조건도 줘야 하므로
-        const result = await Product.findOne({
-            include: [
-                { model: Ingredient },
-                { model: Pictogram }
-            ],
-            where: { id: req.params.id },
-        })
+        // const result = await Product.findOne({
+        //     include: [
+        //         { model: Ingredient },
+        //         { model: Pictogram }
+        //     ],
+        //     where: { id: req.params.id },
+        // })
+        const result = await Product.findByPk(req.params.id,
+            {
+                include: [
+                    { model: Ingredient },
+                    { model: Pictogram }
+                ],
+            });
         console.log(`join 결과`)
         console.log(result);
         console.log('픽토그램 확인')
         console.log(result.dataValues.pictograms)
 
         // 성분 정보를 객체에 담는다
-        resultObj.productInfo = result;
 
-        // product_id를 이용하여 review의 정보를 가져온다
-        // 이 부분을 리뷰를 추가하는 부분에서 불러보자
-        // 이게 리뷰 리스트를 만드는 코드였으니 되겠지
-        // 1. 리뷰를 작성한다(reviws -> post에서 실행)
-        // 2. 작성한 리뷰를 리뷰 아래와 같이 검색한다
-        // 3. 리턴한다
         let reviewInfo = await Review.findAll({
             include: [
-                { model: User },
-                { model: Comment }
+                
+                // { model: Comment }
             ],
             where: { productId: req.params.id },
             order: [['id', 'DESC']], // 리뷰는 최신순으로(댓글은 오름차순으로)
         });
 
-        //  가져온 User객체에서 user_id만 추출한 후 삭제
-        if (reviewInfo.length > 0) {
-            reviewInfo.forEach(item => {
-                item.dataValues.user_id = item.dataValues.user.user_id;
-                delete item.dataValues.user
-            });
-        }
+        res.json(result);
 
-        // 삭제한 후에 review도 resultObj에 추가
-        // review가 없다면 reviewInfo 는 null?
-        resultObj.reviewInfo = reviewInfo;
-        console.log('삭제확인')
-        console.log(reviewInfo[0])
-
-        // review가 없을 때도 처리
-        // 빈 배열인지 확인
-        // if (reviewInfo.length > 0) {
-        //     console.log('user_id 값')
-        //     console.log(reviewInfo);
-        // } else {
-        //     console.log('댓글이 없습니다')
-        // }
-        res.json(resultObj);
-
-    } catch (err) {
+    } catch(err) {
+        res.json({
+            code: 500,
+            message: '서버에서 에러 발생'
+        });
         console.log(err);
     }
 })
@@ -249,7 +258,7 @@ router.get('/:id', async (req, res) => {
 // 3개의 테이블에 데이터 등록
 router.post('/', async (req, res) => {
     console.log(`성분확인`)
-    console.log(req.body.ingredientsArr);
+    console.log(req.body.ingredients);
 
     try {
         let result = await Product.findOrCreate({
@@ -268,21 +277,22 @@ router.post('/', async (req, res) => {
             }
         })
             .spread(async (product, created) => {
+                console.log('여기까지는 왔나', req.body.pictogram);
                 let productId;
                 let pictogramId = [];
                 if (created) {
-                    let pictogram = req.body.pictogram;
+                    const pictogram = req.body.pictogram;
 
                     for (idx in pictogram) {
                         // null check
                         if (!pictogram[idx]) {
                             continue;
                         } else {
-                            var result = await Pictogram.findOne({
+                                var result = await Pictogram.findOne({
                                 where: { 'pictogram_name': pictogram[idx] }
                             })
                         }
-                        console.log(result);
+                        console.log('픽토그램 등록', result);
                         pictogramId.push(result.dataValues.id); // 픽토그램 id를 배열에 넣는다.
                     }
                     result = await Product.findOne({
@@ -293,13 +303,13 @@ router.post('/', async (req, res) => {
                     console.log(productId);
 
                     for (idx in pictogramId) {
-                        sequelize.query(`INSERT INTO product_pictograms VALUES(now(),now(),${productId},${pictogramId[idx]})`)
+                        sequelize.query(
+                            `INSERT INTO product_pictograms VALUES(now(),now(),${ productId },${ pictogramId[idx] })`)
                             .then((results, metadata) => {
                                 console.log(results)
                             })
                     }
-
-                    let ingredient = req.body.ingredientsArr;
+                    let ingredient = req.body.ingredients;
                     console.log(`입력받은 성분`)
                     console.log(ingredient);
                     for (idx in ingredient) {
@@ -323,7 +333,12 @@ router.post('/', async (req, res) => {
                     });
                 }
             })
-    } catch (err) {
+
+    } catch(err) {
+        res.json({
+            code: 500,
+            message: '서버 에러입니다.'
+        });
         console.log(err);
     }
 })
