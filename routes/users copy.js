@@ -7,6 +7,8 @@ const bcrypt = require('bcrypt');
 // const jwt = require('jsonwebtoken');
 const { verifyToken, access_token } = require('./middleware');
 const Op = models.Sequelize.Op;
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 // 전체 회원의 목록 조회
 router.get('/', async (req, res, next) => {
@@ -17,7 +19,7 @@ router.get('/', async (req, res, next) => {
     // [{"id":"","email":""},{...}] 형태
     res.json(user);
 
-  } catch(err) {
+  } catch (err) {
     res.json({
       code: 500,
       message: '서버에서 에러가 발생했습니다.'
@@ -29,24 +31,22 @@ router.get('/', async (req, res, next) => {
 // 회원 가입
 router.post('/', async (req, res) => {
 
-  // const { headers } = req
-  // console.log(headers);
   try {
-    // 아이디 중복체크 
+    // 아이디복체크 
     const userId = await User.findOne({
       where: { user_id: req.body.user_id }
     })
-    console.log('아이디 중복체크 결과');
-    console.log(userId);
+    console.log('아이디복체크 결과', userId);
+
     // 검색결과가 있다 = 이미 가입된 아이디
     if (userId) {
       return res.json({
         code: 409,
-        message: '사용 중인 아이디입니다.'
+        message: '사용인 아이디입니다.'
       });
     }
 
-    // 이메일 중복 검사
+    // 이메일복 검사
     const email = await User.findOne({
       where: { email: req.body.email }
     })
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     if (email) {
       return res.json({
         code: 409,
-        message: '가입된 이메일입니다.'
+        message: '이미 사용인 이메일입니다.'
       });
     }
 
@@ -87,11 +87,11 @@ router.post('/', async (req, res) => {
       id
     });
 
-  } catch(err) {
-    console.log(err);
+  } catch (err) {
+    console.log('회원가입 에러발생', err);
     return res.status(500).json({
       code: 500,
-      message: '서버에러 발생'
+      message: '서버에서 에러가 발생했습니다.'
     })
   }
 });
@@ -102,35 +102,31 @@ router.post('/login', async (req, res) => {
     // 아이디/ 이메일 사용자 정보를 조회
     // id/email 둘 다로 검색하지만 받은 정보는 1개이므로
     // 이 정보로 or 검색을 실행한다.
-    console.log('리퀘스트바디')
-    console.log(req.body);
     const { user_id_email } = req.body;
-    console.log('확인용')
-    console.log(user_id_email);
+    console.log('로그인 id/email 확인', user_id_email);
+
     const user = await User.findOne({
       where: {
-        [Op.or]: [{ user_id: req.body.user_id_email },
-        { email: req.body.user_id_email }],
+        [Op.or]: [
+          { user_id: req.body.user_id_email },
+          { email: req.body.user_id_email }
+        ],
       }
     })
 
     if (user) {
-      console.log('이용자 정보:')
-      console.log(user);
       // result는 true/false
       const result = await bcrypt.compare(req.body.user_pwd, user.user_pwd);
       const id = user.id;
       if (result) {
         token = access_token(user);
 
-        console.log('토큰확인');
-        console.log(token);
         res.json({
           code: 200,
           message: '로그인 성공',
           token,
           id,
-        })
+        });
       } else {
         res.json({
           code: 403,
@@ -147,8 +143,8 @@ router.post('/login', async (req, res) => {
       })
     }
 
-  } catch(err) {
-    console.log(err);
+  } catch (err) {
+    console.log('로그인 에러 발생', err);
     return res.statusCode(500).json({
       code: 500,
       message: '서버에러'
@@ -156,47 +152,54 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 사용자 프로필 조회
-// & 사용자 토큰 인증(분기로 2가지 다 처리)
-router.get('/profile', verifyToken, async (req, res) => {
-  console.log('프로필')
-  console.log(req.decoded)
-  // const payload = req.decoded; 
+// 사용자 프로필 조회(토큰 유효성은 token에서 처리)
+router.post('/profile', async (req, res) => {
 
-  const query = req.query.type;
-  console.log('쿼리 확인');
-  console.log(query)
   try {
-    // 토큰이 만료되었는지 
-    // 유효한 토큰인지 확인 -> middleware.js에서 하는 작업
-    // 여기서는 토큰이 없는 상태에서의 접근만 차단
-    const user = await User.findOne({
-      where: {
-        user_id: req.decoded.id,
-      }
-    });
-    console.log('결과')
-    console.log(user)
+    const user = await User.findByPk(req.body.id);
+    console.log('프로필 조회 결과', user);
+
     //  비밀번호까지 전해주지X
     const { id, user_id, email } = user;
 
     if (user) {
-      // 토큰 유효성 따지기 & 아이디만 조회용
+      return res.json({
+        code: 200,
+        email
+      });
+    }
+    else {
+      return res.json({
+        code: 403,
+        message: '사용자 정보가 없습니다.'
+      });
+    }
+  } catch (err) {
+    console.log('프로필 조회 에러 발생', err);
+    res.json({
+      code: 500,
+      message: '서버에서 에러가 발생했습니다.'
+    })
+  }
+});
+
+// 토큰 유효성 확인용 라우트
+router.get('/token', verifyToken, async (req, res) => {
+  try {
+    // 유효한 토큰인지 확인 -> middleware.js에서 하는 작업
+    const user = await User.findByPk(req.decoded.id);
+    console.log('토큰 유효성 검사 후 유저 조회 결과', user);
+
+    const { id, user_id } = user;
+
+    if (user) {
+      // 토큰 유효성 따지기 & 아이디 조회용
       // 파라미터가 빈객체가 아니라면 id와 usr_id만 건네준다
-      if (query === 'i') {
-        return res.json({
-          code: 200,
-          id,
-          user_id
-        });
-      } else {  // 프로필 조회용
-        return res.json({
-          code: 200,
-          id,
-          user_id,
-          email
-        });
-      }
+      return res.json({
+        code: 200,
+        id,
+        user_id
+      });
 
     } else {
       return res.json({
@@ -205,11 +208,11 @@ router.get('/profile', verifyToken, async (req, res) => {
       });
     }
 
-  } catch(err) {
-    console.log(err);
+  } catch (err) {
+    console.log('토큰 검증 에러발생', err);
     res.json({
       code: 500,
-      message: '서버에러'
+      message: '서버에서 에러가 발생했습니다.'
     })
   }
 });
@@ -221,62 +224,180 @@ router.patch('/modify/:id', async (req, res) => {
   console.log('회원정보수정')
   const type = req.query.type;
   console.log('비밀번호 수정 파라미터 확인', req.params.id);
-  console.log('email확인', req.body);
+  console.log('email확인', req.body.email);
 
-  // reqest body parser가 제대로 동작하지 않는 오류?
-  // [Object: null prototype] { '이메일주소': '' } 형태로 body가 넘어옴
-  const obj = JSON.parse(JSON.stringify(req.body)); // req.body = [Object: null prototype] { title: 'product' }
-
-console.log(obj); // { title: 'product' }
-console.log('키를 찾자', Object.keys(obj)); // { title: 'product' }
   try {
-    if(type === 'e') {
-      const result = await User.update({
-        email: req.body.email,
-      }, { 
-        where: { id: req.params.id }
+    if (type === 'e') {
+      // 사용인 이메일인지 확인 후 아니라면 update
+      // 사용이라면 메시지 리턴
+
+      const find = await User.findOne({
+        where: { email: req.body.email }
       });
-    console.log('이메일 업데이트 확인', result);
+      console.log('이메일 상태 확인', find)
+      if (find) {
+        res.json({
+          code: 409,
+          message: '이미 사용인 이메일입니다.'
+        });
+      } else {
+        const result = await User.update({
+          email: req.body.email,
+        },
+          {
+            where: { id: req.params.id }
+          });
 
-    } else if(type === 'p') {
+        console.log('이메일 업데이트 확인', result);
+        res.json({
+          code: 200,
+          message: '이메일을 변경하였습니다.',
+          result
+        });
+      }
+    } else if (type === 'p') {
+      // 현재 비밀번호랑 일치하는지 확인
       // 비밀번호 암호화 해서 비교해야 함
-      const result = User.findByPk(
-        req.body.email
-      )
-    }
+      // 그 후에 새 비밀번호로 변경(암호화)
+      console.log('비밀번호 비교', req.params.id);
+      const user = await User.findByPk(req.params.id);
+      const compare = await bcrypt.compare(req.body.currentPwd, user.user_pwd);
+      console.log('비밀번호 비교 결과', compare);
 
-  } catch(err) {
+      if (compare) {
+        const hash = await bcrypt.hash(req.body.pwd, 12);
+
+        const result = await User.update(
+          {
+            user_pwd: hash
+          },
+          {
+            where: { id: req.params.id }
+          });
+
+        res.json({
+          code: 200,
+          message: '비밀번호가 변경되었습니다.',
+          result
+        });
+
+      } else {
+        res.json({
+          code: 403,
+          message: '비밀번호가 일치하지 않습니다. 비밀번호를 확인해 주세요.'
+        });
+      }
+    }
+  } catch (err) {
     res.json({
       code: 500,
       message: '서버에서 에러 발생'
     });
-    console.log(err);
+    console.log('회원 정보 수정 에러 발생.', err);
   }
 });
 
-// 비밀번호 찾기
-router.patch('/updatePwd', verifyToken, async (req, res) => {
+// 비밀번호 찾기 이메일 전송 라우트
+// 1. 사용자한테서 전송받은 이메일을 찾는다
+// 2. 가입된 이메일이면 비밀번호 재설정 링크를 전송
+// 3. 가입된 이메일이 아니면 에러 메시지를 보낸다.
+router.post('/resetPwd', async (req, res) => {
+  console.log('비번재설정 이메일', req.body.email);
+  const email = req.body.email;
+  try {
+    const user = await User.findOne({
+      where: { email }
+    });
+    console.log('회원 가입 확인', user);
+
+    if(user) {
+      // 토큰 발급 
+      const token = jwt.sign(
+        {
+          email
+        }, 
+        process.env.YAKSSOK_SECRET,
+        {
+          expiresIn: '1m', // 1분 설정
+          issuer: 'yakssok'
+        });
+
+      // 이메일 발송 객체를 생성
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        secure: false, 
+        auth: {
+          user: 'yakssok2020@gmail.com',  // 이메일 계정
+          // pass: process.env.YAKSSOK_EMAIL // 이메일 계정의 비밀번호
+          pass: 'yakssok2020=' // 이메일 계정의 비밀번호
+        }
+      });
+
+      const mailOptions = {
+        from: 'yakssock2020@gmail.com',    // 발송 메일 주소(위에서 작성한 gmail 계정 아이디)
+        to: email,                     // 수신 메일 주소
+        subject: 'yakssok 회원 비밀번호 재설정',   // 제목
+        html: `<p>비밀 번호를 재설정 하기 위해 아래의 링크를 클릭해주세요.
+                아래 링크는 3시간 동안 유효합니다.</p> 
+          <a :href='${ process.env.YAKSSOK_FRONT }/auth/${ token }>인증하기</a>`
+      };
+      // 메일을 발송
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        }
+        else {
+          console.log('Email sent: ' + info.response);
+          return res.json({ 
+            code: 200, 
+            message: '비밀번호 재설정 메일을 전송하였습니다.' 
+          });
+        }
+      });
+    } else {
+      res.json({
+        code: 403,
+        message: '가입된 이메일 주소가 아닙니다. 이메일 주소를 확인해 주세요.'
+      });
+    }
+  } catch (err) {
+    console.log('비밀번호 변경 이메일에서 에러 발생', err);
+  }
+});
+
+// 비밀번호 찾기(새 비밀번호 설정)
+router.patch('/updatePwd', async (req, res) => {
   try {
 
-  } catch(err) {
+  } catch (err) {
     res.json({
       code: 500,
       message: '서버에서 에러가 발생했습니다.'
     });
-    console.log(err);
+    console.log('비밀번호 찾기 에러 발생', err);
   }
 });
 
 // 회원탈퇴
-router.delete('/deleteAccount', verifyToken, async (req, res) => {
+router.delete('/deleteAccount/:id', async (req, res) => {
   try {
+    const result = await User.destroy(
+      {
+        where: { id: req.params.id }
+      });
+    console.log('회원 탈퇴 확인', result);
 
-  } catch(err) {
+    res.json({
+      code: 200,
+      message: '회원탈퇴 요청이 처리되었습니다.'
+    });
+
+  } catch (err) {
     res.json({
       code: 500,
       message: '서버에서 에러 발생'
     });
-    console.log(err);
+    console.log('탈퇴 처리 에러 발생', err);
   }
 });
 

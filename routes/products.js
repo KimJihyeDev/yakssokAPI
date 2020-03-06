@@ -7,10 +7,6 @@ const Op = Sequelize.Op;
 const Product = models.Product;
 const Ingredient = models.Ingredient;
 const Pictogram = models.Pictogram; // N:M 관계를 맺은 테이블
-const Review = models.Review; // 
-const Comment = models.Comment;
-const User = models.User;
-
 
 // 메인 화면에 뿌려질 제품 리스트 가져오기
 router.get('/', async (req, res, next) => {
@@ -19,12 +15,14 @@ router.get('/', async (req, res, next) => {
             order: [['id', 'DESC']], // 최신 제품 
             limit: 12  // 제품 개수는 12개로 
         });
-        res.json(products);
-
+        res.json({
+            code: 200,
+            products
+        });
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버에서 에러 발생'
+            message: '서버에서 에러가 발생했습니다'
         });
         console.log(err);
     }
@@ -38,43 +36,17 @@ router.get('/all', async (req, res, next) => {
             order: [['id', 'DESC']],
             // limit: 10
         });
-        res.json(products);
-
-    } catch (err) {
         res.json({
-            code: 500,
-            message: '서버에서 에러 발생'
+            code: 200,
+            products
         });
-        console.log(err);
-    }
-});
-
-// 관리자 사이트에서 제품 1개 읽어오기(수정페이지용)
-router.get('/one', async (req, res) => {
-    try {
-        // const result = await Product.findOne({
-        //     include: [
-        //         { model: Ingredient },
-        //         { model: Pictogram }
-        //     ],
-        //     where: { id: req.query.id }
-        // })
-        const result = await Product.findByPk(req.query.id, 
-            {
-                include: [
-                    { model: Ingredient },
-                    { model: Pictogram }
-                ],
-            });
-        console.log(result);
-        res.json(result);
 
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버에서 에러 발생'
+            message: '서버에서 에러가 발생했습니다'
         });
-        console.log(err);
+        console.log('제품 정보 에러 발생', err);
     }
 });
 
@@ -92,20 +64,18 @@ router.get('/search', async (req, res) => {
             }
         });
 
-        console.log('검색결과');
-        console.log(result);
+        console.log('검색결과', result);
         // result.length > 0
-        res.json(result)
-        //     : res.json({
-        //         message: '검색결과가 없습니다.'
-        //     })
-
+        res.json({
+            code: 200,
+            result
+        });
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버에러입니다.'
+            message: '서버에서 에러가 발생했습니다.'
         });
-        console.log(err);
+        console.log('제품 검색 에러 발생', err);
     }
 })
 
@@ -124,7 +94,6 @@ router.patch('/modify', async (req, res) => {
                 servings: req.body.servings,
                 total_servings: req.body.total_servings,
                 other_ingredients: req.body.other_ingredients,
-
             },
             { where: { id: req.query.id } }
         );
@@ -136,9 +105,9 @@ router.patch('/modify', async (req, res) => {
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버에러 발생'
+            message: '서버에서 에러가 발생했습니다'
         });
-        console.log(err);
+        console.log('제품 정보 수정 에러 발생', err);
     }
 });
 
@@ -151,16 +120,14 @@ router.delete('/delete', async (req, res) => {
         console.log('제품삭제 확인', result);
 
         res.json({
-            code: 200,
-            message: '삭제 성공',
+            code: 200
         });
-
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버에러 발생'
+            message: '서버에서 에러가 발생했습니다'
         });
-        console.log(err);
+        console.log('제품 삭제 에러 발생', err);
     }
 })
 
@@ -193,64 +160,43 @@ router.get('/categories/:parent_id/:child_id', async (req, res) => {
                 limit: 12
             });
         }
-        console.log('카테고리 검색 결과')
-        console.log(products);
-        res.json(products);
-
+        res.json({
+            code: 200,
+            products
+        });
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버에서 에러 발생'
+            message: '서버에서 에러가 발생했습니다'
         });
-        console.log(err);
+        console.log('카테고리 검색 에러 발생', err);
     }
 });
 
-// 프론트에서 단일 상품 조회(3개의 테이블을 join)
+// 단일 상품 조회
 // 와일드카드 패턴이 적용되었으므로 최하단에 작성(같은 전송방식에만 해당. get, post, patch...)
 router.get('/:id', async (req, res) => {
-
     try {
         // 상품, 성분 정보 가져오기
         // 리뷰는 여기서 가져오면X. limit와 order조건도 줘야 하므로
-        // const result = await Product.findOne({
-        //     include: [
-        //         { model: Ingredient },
-        //         { model: Pictogram }
-        //     ],
-        //     where: { id: req.params.id },
-        // })
-        const result = await Product.findByPk(req.params.id,
+        const product = await Product.findByPk(req.params.id,
             {
                 include: [
                     { model: Ingredient },
                     { model: Pictogram }
                 ],
             });
-        console.log(`join 결과`)
-        console.log(result);
-        console.log('픽토그램 확인')
-        console.log(result.dataValues.pictograms)
 
-        // 성분 정보를 객체에 담는다
-
-        let reviewInfo = await Review.findAll({
-            include: [
-                
-                // { model: Comment }
-            ],
-            where: { productId: req.params.id },
-            order: [['id', 'DESC']], // 리뷰는 최신순으로(댓글은 오름차순으로)
+        res.json({
+            code: 200,
+            product
         });
-
-        res.json(result);
-
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버에서 에러 발생'
+            message: '서버에서 에러가 발생했습니다'
         });
-        console.log(err);
+        console.log('단일 상품 조회 에러 발생', err);
     }
 })
 
@@ -277,7 +223,6 @@ router.post('/', async (req, res) => {
             }
         })
             .spread(async (product, created) => {
-                console.log('여기까지는 왔나', req.body.pictogram);
                 let productId;
                 let pictogramId = [];
                 if (created) {
@@ -309,9 +254,9 @@ router.post('/', async (req, res) => {
                                 console.log(results)
                             })
                     }
-                    let ingredient = req.body.ingredients;
-                    console.log(`입력받은 성분`)
-                    console.log(ingredient);
+                    const ingredient = req.body.ingredients;
+                    console.log(`입력받은 성분`, ingredient);
+
                     for (idx in ingredient) {
                         let result = await Ingredient.create({
                             ingredient: ingredient[idx].ingredient,
@@ -323,9 +268,8 @@ router.post('/', async (req, res) => {
                         console.log(result);
                     }
                     res.json({
-                        code: 200,
-                        message: `등록성공`
-                    })
+                        code: 200
+                    });
                 } else {
                     res.json({
                         code: 409,
@@ -337,7 +281,7 @@ router.post('/', async (req, res) => {
     } catch(err) {
         res.json({
             code: 500,
-            message: '서버 에러입니다.'
+            message: '서버에서 에러가 발생했습니다'
         });
         console.log(err);
     }

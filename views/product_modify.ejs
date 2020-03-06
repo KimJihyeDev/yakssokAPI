@@ -21,7 +21,7 @@
         .is-visible {
             visibility: visible;
         }
-
+        
         .not-visible {
             visibility: hidden;
         }
@@ -472,7 +472,7 @@
                     if (reply) {
                         (async () => {
                             try {
-                                const result = await axios.delete(`/products/delete?id=${param}`);
+                                const result = await axios.delete(`/products/delete?id=${ param }`);
                                 console.log('삭제결과', result)
                                 if (result.data.code === 200) {
                                     alert('삭제성공');
@@ -495,7 +495,8 @@
             created() {
                 (async () => {
                     try {
-                        let response = await axios.get(`/products/one?id=${param}`);
+                        // let response = await axios.get(`/products/one?id=${param}`);
+                        let response = await axios.get(`/products/${ param }`);
                         this.product = response.data;
                         console.log('상품개별정보 받아옴', this.product);
 
