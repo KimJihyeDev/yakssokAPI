@@ -345,39 +345,39 @@
 
                 },
                 modifyProduct() {
-                    let check = (name, ref) => {
-                        alert(`${name} 입력해주세요`);
+                    const check = (name, ref) => {
+                        alert(`${ name } 입력해주세요`);
                         ref.focus();
+                        return false;
                     }
 
                     if (!this.product.product_name) {
                         // 반드시 this.$refs가 붙어있는 형태로 넘겨줘야 인식됨
-                        check('제품이름을', this.$refs.product_name);
-                        return false;
+                        return check('제품이름을', this.$refs.product_name);
                     } else if (!this.product.product_desc) {
-                        check('제품상세를', this.$refs.product_desc);
-                        return false;
+
+                        return check('제품상세를', this.$refs.product_desc);
                     } else if (!this.product.suggested_use) {
-                        check('복용법을', this.$refs.suggested_use);
-                        return false;
+
+                        return check('복용법을', this.$refs.suggested_use);
                     } else if (!this.product.warnings) {
-                        check('주의사항을', this.$refs.warnings);
-                        return false;
+
+                        return check('주의사항을', this.$refs.warnings);
                     } else if (!this.product.other_ingredients) {
-                        check('기타성분을', this.$refs.other_ingredients);
-                        return false;
+
+                        return check('기타성분을', this.$refs.other_ingredients);
                     } else if (!this.product.servings) {
-                        check('1회 제공량을', this.$refs.servings);
-                        return false;
+
+                        return check('1회 제공량을', this.$refs.servings);
                     } else if (!this.product.total_servings) {
-                        check('전체제공량을', this.$refs.total_servings);
-                        return false;
+
+                        return check('전체제공량을', this.$refs.total_servings);
                     } else if (!this.product.parent_category) {
-                        check('1차 카테고리를', this.$refs.parent_category);
-                        return false;
+
+                        return check('1차 카테고리를', this.$refs.parent_category);
                     } else if (!this.product.child_category) {
-                        check('2차 카테고리를', this.$refs.child_category);
-                        return false;
+
+                        return check('2차 카테고리를', this.$refs.child_category);;
                     }
 
                     // 이미지폼 처리

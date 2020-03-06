@@ -16,7 +16,7 @@ module.exports=(sequelize,DataTypes)=>{
             allowNull:false,
             unique:true
         }, 
-        product_image:{ // 제품 이미지 경로와 이름
+        product_image:{ // 제품 이미지 이름
             type:DataTypes.STRING(100),
                 // get: function () {
                 //     return JSON.parse(this.getDataValue('value'));

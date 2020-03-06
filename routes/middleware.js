@@ -36,10 +36,9 @@ exports.access_token = (user) => {
     try {
         // jwt 토큰 발급                         
         const token = jwt.sign({
-            id: user.user_id,
-            email: user.email
+            id: user.id,
         }, process.env.YAKSSOK_SECRET, {
-            expiresIn: '2h',
+            expiresIn: '2hour',
             issuer: 'YAKSSOK'
         });
         return token;

@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     if (email) {
       return res.json({
         code: 409,
-        message: '이미 사용 중인 이메일입니다.'
+        message: '가입된 이메일입니다.'
       });
     }
 
@@ -102,19 +102,19 @@ router.post('/login', async (req, res) => {
     // 아이디/ 이메일 사용자 정보를 조회
     // id/email 둘 다로 검색하지만 받은 정보는 1개이므로
     // 이 정보로 or 검색을 실행한다.
+    console.log('리퀘스트바디')
+    console.log(req.body);
     const { user_id_email } = req.body;
     console.log('확인용')
     console.log(user_id_email);
     const user = await User.findOne({
       where: {
-        [Op.or]: [
-          { user_id: req.body.user_id_email },
-          { email: req.body.user_id_email }
-        ],
+        [Op.or]: [{ user_id: req.body.user_id_email },
+        { email: req.body.user_id_email }],
       }
     })
 
-    if(user) {
+    if (user) {
       console.log('이용자 정보:')
       console.log(user);
       // result는 true/false
@@ -156,54 +156,47 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 사용자 프로필 조회(토큰 유효성은 token에서 처리)
-router.post('/profile', async (req, res) => {
+// 사용자 프로필 조회
+// & 사용자 토큰 인증(분기로 2가지 다 처리)
+router.get('/profile', verifyToken, async (req, res) => {
+  console.log('프로필')
+  console.log(req.decoded)
+  // const payload = req.decoded; 
 
+  const query = req.query.type;
+  console.log('쿼리 확인');
+  console.log(query)
   try {
-    const user = await User.findByPk(req.body.id);
-    console.log('프로필 조회 결과', user);
-
+    // 토큰이 만료되었는지 
+    // 유효한 토큰인지 확인 -> middleware.js에서 하는 작업
+    // 여기서는 토큰이 없는 상태에서의 접근만 차단
+    const user = await User.findOne({
+      where: {
+        user_id: req.decoded.id,
+      }
+    });
+    console.log('결과')
+    console.log(user)
     //  비밀번호까지 전해주지X
     const { id, user_id, email } = user;
 
     if (user) {
-      return res.json({
-          code: 200,
-          email
-      });
-    } 
-    else {
-      return res.json({
-        code: 403,
-        message: '사용자 정보가 없습니다.'
-      });
-    }
-  } catch(err) {
-    console.log(err);
-    res.json({
-      code: 500,
-      message: '서버에러'
-    })
-  }
-});
-
-// 토큰 유효성 확인용 라우트
-router.get('/token', verifyToken, async (req, res) => {
-  try {
-    // 유효한 토큰인지 확인 -> middleware.js에서 하는 작업
-    const user = await User.findByPk(req.decoded.id);
-    console.log('토큰 유효성 검사 후 유저 조회 결과', user);
-
-    const { id, user_id } = user;
-
-    if (user) {
-      // 토큰 유효성 따지기 & 아이디 조회용
+      // 토큰 유효성 따지기 & 아이디만 조회용
       // 파라미터가 빈객체가 아니라면 id와 usr_id만 건네준다
-      return res.json({
-        code: 200,
-        id,
-        user_id
-      });
+      if (query === 'i') {
+        return res.json({
+          code: 200,
+          id,
+          user_id
+        });
+      } else {  // 프로필 조회용
+        return res.json({
+          code: 200,
+          id,
+          user_id,
+          email
+        });
+      }
 
     } else {
       return res.json({
@@ -228,70 +221,30 @@ router.patch('/modify/:id', async (req, res) => {
   console.log('회원정보수정')
   const type = req.query.type;
   console.log('비밀번호 수정 파라미터 확인', req.params.id);
-  console.log('email확인', req.body.email);
+  console.log('email확인', req.body);
 
+  // reqest body parser가 제대로 동작하지 않는 오류?
+  // [Object: null prototype] { '이메일주소': '' } 형태로 body가 넘어옴
+  const obj = JSON.parse(JSON.stringify(req.body)); // req.body = [Object: null prototype] { title: 'product' }
+
+console.log(obj); // { title: 'product' }
+console.log('키를 찾자', Object.keys(obj)); // { title: 'product' }
   try {
     if(type === 'e') {
-      // 사용 중인 이메일인지 확인 후 아니라면 update
-      // 사용 중이라면 메시지 리턴
-
-      const find = await User.findOne({
-        where: { email: req.body.email }
+      const result = await User.update({
+        email: req.body.email,
+      }, { 
+        where: { id: req.params.id }
       });
-      console.log('이메일 상태 확인', find)
-      if(find) {
-        res.json({
-          code: 409,
-          message: '이미 사용 중인 이메일입니다.'
-        });
-      } else {
-        const result = await User.update({
-          email: req.body.email,
-        }, 
-        { 
-          where: { id: req.params.id }
-        });
-
-        console.log('이메일 업데이트 확인', result);
-        res.json({
-          code: 200,
-          message: '이메일을 변경하였습니다.',
-          result
-        });
-      }
+    console.log('이메일 업데이트 확인', result);
 
     } else if(type === 'p') {
-      // 현재 비밀번호랑 일치하는지 확인
       // 비밀번호 암호화 해서 비교해야 함
-      // 그 후에 새 비밀번호로 변경(암호화)
-      console.log('비밀번호 비교', req.params.id);
-      const user = await User.findByPk(req.params.id);
-      const compare = await bcrypt.compare(req.body.currentPwd, user.user_pwd);
-      console.log('비밀번호 비교 결과', compare);
-      
-      if(compare) {
-        const hash = await bcrypt.hash(req.body.pwd, 12);
-
-        const result = await User.update({
-          user_pwd: hash
-        }, 
-        { 
-          where: { id: req.params.id }
-        });
-        
-        res.json({
-          code: 200,
-          message: '비밀번호가 변경되었습니다.',
-          result
-        });
-
-      } else {
-        res.json({
-          code: 403,
-          message: '비밀번호가 일치하지 않습니다. 비밀번호를 확인해 주세요.'
-        });
-      }
+      const result = User.findByPk(
+        req.body.email
+      )
     }
+
   } catch(err) {
     res.json({
       code: 500,
@@ -302,7 +255,7 @@ router.patch('/modify/:id', async (req, res) => {
 });
 
 // 비밀번호 찾기
-router.patch('/updatePwd', async (req, res) => {
+router.patch('/updatePwd', verifyToken, async (req, res) => {
   try {
 
   } catch(err) {
@@ -315,7 +268,7 @@ router.patch('/updatePwd', async (req, res) => {
 });
 
 // 회원탈퇴
-router.delete('/deleteAccount/:id', async (req, res) => {
+router.delete('/deleteAccount', verifyToken, async (req, res) => {
   try {
 
   } catch(err) {

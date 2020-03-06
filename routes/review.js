@@ -3,7 +3,6 @@ const router = express.Router();
 const models = require('../models/index');
 const Sequelize = models.Sequelize;
 const Op = models.Sequelize.Op;
-const { verifyToken } = require('./middleware')
 const Review = models.Review; // 상품평
 const Comment = models.Comment; // 상품평 댓글
 const User = models.User; // 상품평 댓글
@@ -49,10 +48,8 @@ router.get('/', async (req, res) => {
 
 // 상품평 작성하기
 // 토큰의 유효성은 여기서 따지지x(해당 라우트에 진입할 때 검사했음)
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-        console.log('유저확인~')
-        console.log(req.body)
         let result = await Review.create({
             title: req.body.title,
             contents: req.body.contents,
@@ -98,7 +95,7 @@ router.post('/', verifyToken, async (req, res) => {
 })
 
 // 상품평 삭제
-router.delete('/delete/:productId/:reviewId', verifyToken, async (req, res) => {
+router.delete('/delete/:productId/:reviewId', async (req, res) => {
     try {
         let result = await Review.destroy({
             where: { id: req.params.reviewId }
@@ -139,7 +136,7 @@ router.delete('/delete/:productId/:reviewId', verifyToken, async (req, res) => {
 });
 
 // 상품평 수정
-// router.patch('/delete', verifyToken, async (req,res) => {
+// router.patch('/delete', async (req,res) => {
 //     try {
 //         console.log('수정하고자 하는 id')
 //         console.log(req.query.review_id)
@@ -200,7 +197,7 @@ router.get('/comments', async (req, res) => {
 })
 
 // 코멘트 작성하기
-router.post('/comments', verifyToken, async (req, res) => {
+router.post('/comments', async (req, res) => {
     try {
         console.log(req.body)
         let result = await Comment.create({
@@ -250,7 +247,7 @@ router.post('/comments', verifyToken, async (req, res) => {
 })
 
 // 코멘트 삭제하기
-router.delete('/deleteComment/:reviewId/:commentId', verifyToken, async (req, res) => {
+router.delete('/deleteComment/:reviewId/:commentId', async (req, res) => {
     try {
         console.log('모튼 파라확인', req.params);
         console.log('이게 문제인거 같음', req.params.commentId);
