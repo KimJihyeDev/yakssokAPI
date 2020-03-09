@@ -1,5 +1,5 @@
 {
-  "develpment": {
+  "development": {
     "username": "root",
     "password": "dummy",
     "database": "yakssok",
@@ -23,7 +23,7 @@
   },
   "production": {
     "username": "kjh@yakssok",
-    "password": "dirthr2=",
+    "password": "dummy",
     "database": "yakssok",
     "host": "yakssok.mysql.database.azure.com",
     "dialectOptions": {
