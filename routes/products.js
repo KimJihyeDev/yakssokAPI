@@ -16,10 +16,12 @@ const error = {
 // 메인 화면에 뿌려질 제품 리스트 가져오기
 router.get('/', async (req, res, next) => {
     try {
-        let products = await Product.findAll({
+        let products = await Product.findAndCountAll({
             order: [['id', 'DESC']], // 최신 제품 
-            limit: 12  // 제품 개수는 12개로 
+            limit: 12,  // 제품 개수는 12개씩
+            offset: req.query.offSet * 12,
         });
+        console.log('제품 검색', products);
         res.json({
             code: 200,
             products

@@ -386,8 +386,8 @@
                                 let path = file.data.message;
 
                                 // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다!!
-                                path = path.split('/') // production 코드(Linux)
-                                // path = path.split('\\') // 개발버전 코드
+                                // path = path.split('/') // production 코드(Linux)
+                                path = path.split('\\') // 개발버전 코드
                                 console.log('경로는/이다')
                                 console.log(path[3]);
 
@@ -417,8 +417,10 @@
                             const { code, message } = product.data;
 
                             if (code === 200) {
-                                this.resetForm();
-                                alert('제품 등록성공');
+                                // 제품 등록을 위해 잠시 주석처리
+                                // this.resetForm();
+                                // alert('제품 등록성공');
+                                console.log('등록성공');
                             } else {
                                 alert(message);
                             }
