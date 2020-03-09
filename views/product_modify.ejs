@@ -12,16 +12,13 @@
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/v-cloak.css">
 
     <style>
-        [v-cloak] {
-            display: none;
-        }
-
         .is-visible {
             visibility: visible;
         }
-        
+
         .not-visible {
             visibility: hidden;
         }
@@ -44,24 +41,6 @@
                             <div class="ibox ">
                                 <div class="ibox-title">
                                     <h5>All form elements <small>With custom checbox and radion elements.</small></h5>
-
-                                    <div class="ibox-tools">
-                                        <a class="collapse-link">
-                                            <i class="fa fa-chevron-up"></i>
-                                        </a>
-                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                            <i class="fa fa-wrench"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-user">
-                                            <li><a href="#" class="dropdown-item">Config option 1</a>
-                                            </li>
-                                            <li><a href="#" class="dropdown-item">Config option 2</a>
-                                            </li>
-                                        </ul>
-                                        <a class="close-link">
-                                            <i class="fa fa-times"></i>
-                                        </a>
-                                    </div>
                                 </div>
                                 <div class="ibox-content">
                                     <form method="post" autocomplete="off" id="product-form">
@@ -243,8 +222,8 @@
                                             <label class="col-sm-2 col-form-label">
                                                 제품 이미지<span class="text-danger">*</span>
                                             </label>
-                                            <div class="col-sm-10"><input type="file" class="form-control "
-                                                    name="productImage" ref="product_image"></div>
+                                            <div class="col-sm-10"><input type="file" class="form-control"
+                                                    accept="image/*" name="productImage" ref="product_image"></div>
                                         </div>
                                     </form>
                                     <div class="hr-line-dashed"></div>
@@ -263,15 +242,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer">
-                    <div class="float-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
-                    <div>
-                        <strong>Copyright</strong> Example Company &copy; 2014-2018
-                    </div>
-                </div>
-
+                <%- include('footer') %>
             </div>
         </div>
     </div>
@@ -309,76 +280,82 @@
                 // pictograms: [], // 새로 선택한 픽토그램 배열
             },
             methods: {
-                clearForm() { // 전송 후 폼의 데이터 초기화
-                    this.product.product_name = '';
-                    this.product.product_desc = '';
-                    this.product.suggested_use = '';
-                    this.product.warnings = '';
-                    this.product.other_ingredients = '';
-                    this.product.servings = '';
-                    this.product.total_servings = 0;
-                    this.product.product_image = '';
-                    this.product.parent_category = 0;
-                    this.product.child_category = 0;
-
-                    // for (idx in this.product.pictograms) {
-                    //     this.product.pictograms[idx] = '';
-                    // }
-                    // 성분 삭제
-                    // this.product.ingredients.forEach((item, idx) => {
-                    //     if (idx < 1) {
-                    //         console.log('성분삭제 인덱스 확인', idx);
-                    //         item.ingredient = '';
-                    //         item.per_serving = '';
-                    //         item.daily_value = '';
-                    //     } else {
-                    //         item.ingredient = '';
-                    //         item.per_serving = '';
-                    //         item.daily_value = '';
-                    //     }
-                    // });
-
-                    this.count = 0;
-                    // v-model로 연결되지 않은 데이터들을 화면에서 지운다(vue에서는 위에서 지움)
-                    document.getElementById('file-form').reset();
-                    this.$forceUpdate();
-
-                },
-                modifyProduct() {
+                checkForm() {
+                    console.log('체크')
                     const check = (name, ref) => {
-                        alert(`${ name } 입력해주세요`);
+                        alert(`${name} 입력해주세요`);
                         ref.focus();
                         return false;
                     }
 
                     if (!this.product.product_name) {
                         // 반드시 this.$refs가 붙어있는 형태로 넘겨줘야 인식됨
+                        // 화살표 함수로 작성해서 그런 듯
                         return check('제품이름을', this.$refs.product_name);
                     } else if (!this.product.product_desc) {
-
                         return check('제품상세를', this.$refs.product_desc);
+
                     } else if (!this.product.suggested_use) {
-
                         return check('복용법을', this.$refs.suggested_use);
+
                     } else if (!this.product.warnings) {
-
                         return check('주의사항을', this.$refs.warnings);
+
                     } else if (!this.product.other_ingredients) {
-
                         return check('기타성분을', this.$refs.other_ingredients);
+
                     } else if (!this.product.servings) {
-
                         return check('1회 제공량을', this.$refs.servings);
+
                     } else if (!this.product.total_servings) {
-
                         return check('전체제공량을', this.$refs.total_servings);
+
                     } else if (!this.product.parent_category) {
+                        alert('1차 카테고리를 선택해 주세요');
+                        return false;
 
-                        return check('1차 카테고리를', this.$refs.parent_category);
                     } else if (!this.product.child_category) {
-
-                        return check('2차 카테고리를', this.$refs.child_category);;
+                        alert('2차 카테고리를 선택해 주세요');
+                        return false;
                     }
+
+                    // 성분 널값 체크
+                    for (idx in this.product.ingredients) {
+                        if (!this.product.ingredients[idx].ingredient) {
+                            alert('성분명을 입력해 주세요.');
+                            return false;
+                        } else if (!this.product.ingredients[idx].per_serving) {
+                            alert('함유량을 입력해 주세요');
+                            return false;
+                        }
+                    }
+                    // 이미지 파일 유효성 체크
+                    const imgFile = this.$refs.product_image;
+                    if (!imgFile.value) {
+                        const fileForm = /(.*?)\.(jpg|jpeg|png|gif|bmp|jfif)$/;
+                        const maxSize = 5 * 1024 * 1024;
+                        let fileSize;
+
+                        if (imgFile.value) {
+                            // 확장자, 사이즈 체크
+                            fileSize = imgFile.files[0].size;
+
+                            if (!imgFile.value.match(fileForm)) {
+                                alert("이미지 파일만 업로드 가능합니다.");
+                                return false;
+                            } else if (fileSize > maxSize) {
+                                alert("파일 사이즈는 5MB까지 가능합니다.");
+                                return false;
+                            }
+                        }
+                    }
+
+                    // 전부 다 통과했을 경우
+                    return true;
+                },
+                modifyProduct() {
+                    const check = this.checkForm();
+                    if (!check) return false;
 
                     // 이미지폼 처리
                     // 이미지를 변경하지 않았다면 파일 업로드 없이 상품정보만 변경
@@ -408,18 +385,16 @@
                         (async () => {
                             try {
                                 let result = await axios.post('/files/upload', formData);
-                                console.log(`상품이미지전송결과=${result}`);
-                                console.log(result.data);
+                                console.log(`상품이미지전송결과=`, result.data);
+
                                 if (result.data.code === 200) {
                                     let path = result.data.message;
                                     console.log('파일 업로드가 성공해서 받은 리턴값*');
                                     console.log(path);
+
                                     // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다!!
-                                    // git push를 위해 주석추가
-                                    // 왜 push 안 되는건데!!!!
                                     // path = path.split('/') // production 코드(Linux)
                                     path = path.split('\\') // 개발버전 코드
-                                    console.log('경로는/이다')
                                     console.log(path[3]);
 
                                     this.product.product_image = path[3];
@@ -431,12 +406,11 @@
                                     result = await axios.patch(`/products/modify?id=${param}`, this.product);
                                     console.log(result);
                                     if (result.data.code === 200) {
-                                        alert('수정 성공');
+                                        alert('수정하였습니다.');
                                         location.href = '/product_list';
                                     } else {
                                         alert('수정에 실패했습니다. 다시 시도해 주세요.');
                                     }
-
                                 } else {
                                     alert(result.data.message);
                                 }
@@ -472,10 +446,10 @@
                     if (reply) {
                         (async () => {
                             try {
-                                const result = await axios.delete(`/products/delete?id=${ param }`);
+                                const result = await axios.delete(`/products/delete?id=${param}`);
                                 console.log('삭제결과', result)
                                 if (result.data.code === 200) {
-                                    alert('삭제성공');
+                                    alert('삭제하였습니다');
                                     location.href = '/product_list';
                                 } else {
                                     alert('삭제에 실패하였습니다. 다시 시도해 주세요.');
@@ -495,12 +469,19 @@
             created() {
                 (async () => {
                     try {
-                        // let response = await axios.get(`/products/one?id=${param}`);
-                        let response = await axios.get(`/products/${ param }`);
-                        this.product = response.data;
+                        const response = await axios.get(`/products/${param}`);
+
+                        const { code, message, product } = response.data;
+
+                        code === 200
+                            ? this.product = product
+                            : alert(message);
+
                         console.log('상품개별정보 받아옴', this.product);
 
-                        response = await axios.get('/pictograms');
+                        const pictograms = await axios.get('/pictograms');
+
+
                         this.pictogramArr = response.data;
                     } catch (err) {
                         console.log(err);

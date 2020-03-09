@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -12,12 +10,9 @@
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/v-cloak.css">
 
     <style>
-        [v-cloak] {
-            display: none;
-        }
-
         .not-visible {
             visibility: hidden;
         }
@@ -40,24 +35,6 @@
                             <div class="ibox ">
                                 <div class="ibox-title">
                                     <h5>All form elements <small>With custom checbox and radion elements.</small></h5>
-
-                                    <div class="ibox-tools">
-                                        <a class="collapse-link">
-                                            <i class="fa fa-chevron-up"></i>
-                                        </a>
-                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                            <i class="fa fa-wrench"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-user">
-                                            <li><a href="#" class="dropdown-item">Config option 1</a>
-                                            </li>
-                                            <li><a href="#" class="dropdown-item">Config option 2</a>
-                                            </li>
-                                        </ul>
-                                        <a class="close-link">
-                                            <i class="fa fa-times"></i>
-                                        </a>
-                                    </div>
                                 </div>
                                 <div class="ibox-content">
                                     <form method="post" autocomplete="off" id="product-form">
@@ -65,7 +42,8 @@
                                                     class="text-danger">*</span></label>
 
                                             <div class="col-sm-10"><input type="text" class="form-control"
-                                                    v-model="product.product_name" ref="product_name"></div>
+                                                    maxlength="100" v-model="product.product_name" ref="product_name">
+                                            </div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group  row"><label class="col-sm-2 col-form-label">제품
@@ -112,7 +90,7 @@
                                                     </label>
                                                     <div class="col-md-4"><input type="text" placeholder="1회 제공량"
                                                             class="form-control " v-model="product.servings"
-                                                            ref="servings">
+                                                            maxlength="20" ref="servings">
                                                     </div>
                                                     <label class="col-sm-2 col-form-label">전체 제공량<span
                                                             class="text-danger">*</span>
@@ -165,7 +143,7 @@
                                                 선택</label>
                                             <div class="col-sm-10">
                                                 <div class="row">
-                                                    <div class="col-md-2" v-for="(one, idx) in 5">
+                                                    <div class="col-md-2" v-for="(one, idx) in 5" :kye="one.id">
                                                         <select class="form-control m-b " name="account"
                                                             v-model="product.pictogram[idx]" :key="idx">
                                                             <option v-for="(item, idx) in pictogramArr" :key="item.id">
@@ -183,25 +161,28 @@
                                                 <div class="row">
                                                     </label>
                                                     <!-- 조건에 따라 class 바인딩 -->
-                                                    <label class="col-sm-1 col-form-label" :class="{ 'not-visible': index > 0 }">
+                                                    <label class="col-sm-1 col-form-label"
+                                                        :class="{ 'not-visible': index > 0 }">
                                                         성분명<span class="text-danger">*</span>
                                                     </label>
                                                     <div class="col-md-3"><input type="text" placeholder="성분명"
                                                             class="form-control" ref="ingredient"
                                                             v-model="item.ingredient">
                                                     </div>
-                                                    <label class="col-sm-1 col-form-label" :class="{ 'not-visible': index > 0 }">
+                                                    <label class="col-sm-1 col-form-label"
+                                                        :class="{ 'not-visible': index > 0 }">
                                                         함유량<span class="text-danger">*</span>
                                                     </label>
                                                     </label>
-                                                    <div class="col-md-3"><input type="text" placeholder="함량"
+                                                    <div class="col-md-3"><input type="text" placeholder="함유량"
                                                             class="form-control" v-model="item.per_serving"
                                                             ref="per_serving">
                                                     </div>
-                                                    <label class="col-sm-1 col-form-label" :class="{ 'not-visible' : index > 0 }" >
-                                                        영양소<span class="text-danger">*</span>
+                                                    <label class="col-sm-1 col-form-label"
+                                                        :class="{ 'not-visible' : index > 0 }">
+                                                        %영양소기준치<span class="text-danger">*</span>
                                                     </label>
-                                                    <div class="col-md-3"><input type="number" placeholder="영양"
+                                                    <div class="col-md-3"><input type="number" placeholder="%영양소기준치"
                                                             class="form-control" v-model="item.daily_value">
                                                     </div>
                                                 </div>
@@ -224,8 +205,9 @@
                                             <label class="col-sm-2 col-form-label">
                                                 제품 이미지<span class="text-danger">*</span>
                                             </label>
-                                            <div class="col-sm-10"><input type="file" class="form-control "
-                                                    name="productImage" ref="product_image"></div>
+                                            <div class="col-sm-10"><input type="file" class="form-control"
+                                                    maxlength="100" accept="image/*" id="productImage"
+                                                    name="productImage" ref="product_image" @change="inputImage"></div>
                                         </div>
                                     </form>
                                     <div class="hr-line-dashed"></div>
@@ -243,15 +225,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer">
-                    <div class="float-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
-                    <div>
-                        <strong>Copyright</strong> Example Company &copy; 2014-2018
-                    </div>
-                </div>
-
+                <%- include('footer') %>
             </div>
         </div>
     </div>
@@ -295,80 +269,77 @@
                 pictogramArr: [] // 서버로 부터 받은 전체 픽토그램 배열
             },
             methods: {
-                clearForm() { // 전송 후 폼의 데이터 초기화
+                inputImage() {
+                    // 파일은 v-model로 연결x. 양방향이 안 되므로.
+                    this.product.product_image = this.$refs.product_image.value;
+                },
+                resetForm() { // 전송 후 폼의 데이터 초기화
                     this.product.product_name = '';
                     this.product.product_desc = '';
                     this.product.suggested_use = '';
                     this.product.warnings = '';
                     this.product.other_ingredients = '';
                     this.product.servings = '';
-                    this.product.total_servings = 0;
+                    this.product.total_servings = '';
                     this.product.product_image = '';
                     this.product.parent_category = 0;
                     this.product.child_category = 0;
 
-                    // forEach로는 안 지워짐 왜? 제대로 값을 가져오는건 확인.
                     for (idx in this.product.pictogram) {
                         this.product.pictogram[idx] = '';
                     }
-                    // 성분 삭제
-                    this.product.ingredients.forEach((item, idx) => {
-                        if (idx < 1) {
-                            console.log('성분삭제 인덱스 확인', idx);
-                            item.ingredient = '';
-                            item.per_serving = '';
-                            item.daily_value = '';
-                        } else {
-                            item.ingredient = '';
-                            item.per_serving = '';
-                            item.daily_value = '';
-                        }
-                    });
 
                     this.count = 0;
+                    this.product.ingredients = [
+                        { ingredient: '', per_serving: '', daily_value: '' }
+                    ];
                     // v-model로 연결되지 않은 데이터들을 화면에서 지운다(vue에서는 위에서 지움)
                     document.getElementById('file-form').reset();
                     this.$forceUpdate();
 
                 },
-                submitForm() {
+                checkForm() {
                     const check = (name, ref) => {
-                        alert(`${name} 입력해주세요`);
+                        alert(`${ name } 입력해주세요`);
                         ref.focus();
                         return false;
                     }
 
                     if (!this.product.product_name) {
                         // 반드시 this.$refs가 붙어있는 형태로 넘겨줘야 인식됨
+                        // 화살표 함수로 작성해서 그런 듯
                         return check('제품이름을', this.$refs.product_name);
                     } else if (!this.product.product_desc) {
-
                         return check('제품상세를', this.$refs.product_desc);
+
                     } else if (!this.product.suggested_use) {
-
                         return check('복용법을', this.$refs.suggested_use);
+
                     } else if (!this.product.warnings) {
-
                         return check('주의사항을', this.$refs.warnings);
+
                     } else if (!this.product.other_ingredients) {
-
                         return check('기타성분을', this.$refs.other_ingredients);
+
                     } else if (!this.product.servings) {
-
                         return check('1회 제공량을', this.$refs.servings);
+
                     } else if (!this.product.total_servings) {
-
                         return check('전체제공량을', this.$refs.total_servings);
+
                     } else if (!this.product.parent_category) {
+                        alert('1차 카테고리를 선택해 주세요');
+                        return false;
 
-                        return check('1차 카테고리를', this.$refs.parent_category);
                     } else if (!this.product.child_category) {
-
-                        return check('2차 카테고리를', this.$refs.child_category);;
+                        alert('2차 카테고리를 선택해 주세요');
+                        return false;
+                    } else if (!this.product.product_image) {
+                        alert('제품 이미지를 입력해 주세요');
+                        return false;
                     }
 
-
-                    // 성분 널값 확인
+                    // 성분 널값 체크
                     for (idx in this.product.ingredients) {
                         if (!this.product.ingredients[idx].ingredient) {
                             alert('성분명을 입력해 주세요.');
@@ -379,19 +350,47 @@
                         }
                     }
 
-                    // 이미지폼 처리
+                    // 이미지 파일 유효성 체크
+                    const imgFile = document.getElementById('productImage');
+                    const fileForm = /(.*?)\.(jpg|jpeg|png|gif|bmp|jfif)$/;
+                    const maxSize = 5 * 1024 * 1024;
+                    let fileSize;
+
+                    if (imgFile.value) {
+                        // 확장자, 사이즈 체크
+                        fileSize = imgFile.files[0].size;
+
+                        if (!imgFile.value.match(fileForm)) {
+                            alert("이미지 파일만 업로드 가능합니다.");
+                            return false;
+                        } else if (fileSize > maxSize) {
+                            alert("파일 사이즈는 5MB까지 가능합니다.");
+                            return false;
+                        }
+                    }
+                    // 전부 다 통과했을 경우
+                    return true;
+                },
+                uploadImage() {
+                    // 동기화에 실패하여 submitForm()에 이미지 업로드 코드 작성
+                },
+                submitForm() {
+                    // 폼 체크
+                    const check = this.checkForm();
+                    if (!check) return false;
+
                     const form = this.$refs.imageForm;
                     const formData = new FormData(form);
 
                     (async () => {
                         try {
-                            let result = await axios.post('/files/upload', formData);
-                            console.log(`상품이미지전송결과=${result}`);
-                            console.log(result.data);
-                            if (result.data.code === 200) {
-                                let path = result.data.message;
-                                console.log('파일 업로드가 성공해서 받은 리턴값*');
-                                console.log(path);
+                            // 이미지 전송
+                            const file = await axios.post('/files/upload', formData);
+                            const code = file.data.code;
+
+                            if (code === 200) {
+                                let path = file.data.message;
+
                                 // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다!!
                                 // path = path.split('/') // production 코드(Linux)
                                 path = path.split('\\') // 개발버전 코드
@@ -402,23 +401,20 @@
                                 console.log('이미지확인')
                                 console.log(this.product.product_image);
 
-                                // 상품 등록 요청
-                                console.log('상품등록 요청 보냄')
-                                result = await axios.post('/products', this.product);
-                                console.log(result);
-                                const { code, message } = result.data;
-                                if (code === 200) {
-                                    this.clearForm();
-                                    alert('등록성공');
+                                // 상품 등록 처리
+                                const product = await axios.post('/products', this.product);
+                                const { code, message } = product.data;
 
+                                if (code === 200) {
+                                    this.resetForm();
+                                    alert('제품 등록성공');
                                 } else {
                                     alert(message);
                                 }
-                            } else {
-                                alert(result.data.messege);
                             }
                         } catch (err) {
                             console.log(err);
+                            return false;
                         }
                     })();
                 },
@@ -429,7 +425,6 @@
                         return false;
                     } else {
                         this.product.ingredients.push({ ingredient: '', per_serving: '', daily_value: '' });
-                        // this.product.ingredients[this.count + 1].isTrue = true;
                         this.count++; // 성분 입력창의 개수 증가
                     }
                 },
@@ -448,8 +443,11 @@
                 (async () => {
                     try {
                         let result = await axios.get('/pictograms');
-                        console.log(result);
-                        this.pictogramArr = result.data;
+                        const { code, messae, pictograms } = result.data;
+
+                        code === 200
+                            ? this.pictogramArr = pictograms
+                            : alert(message);
                     } catch (err) {
                         console.log(err);
                     }
@@ -458,5 +456,4 @@
         }).$mount('#vm');
     </script>
 </body>
-
 </html>

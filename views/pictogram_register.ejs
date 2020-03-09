@@ -24,29 +24,10 @@
                 <%- include('header') %>
                 <div class="wrapper wrapper-content animated fadeInRight">
                     <div class="row">
-                    </div>
-                    <div class="row">
                         <div class="col-lg-12">
                             <div class="ibox ">
                                 <div class="ibox-title">
                                     <h5>All form elements <small>With custom checbox and radion elements.</small></h5>
-                                    <div class="ibox-tools">
-                                        <a class="collapse-link">
-                                            <i class="fa fa-chevron-up"></i>
-                                        </a>
-                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                            <i class="fa fa-wrench"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-user">
-                                            <li><a href="#" class="dropdown-item">Config option 1</a>
-                                            </li>
-                                            <li><a href="#" class="dropdown-item">Config option 2</a>
-                                            </li>
-                                        </ul>
-                                        <a class="close-link">
-                                            <i class="fa fa-times"></i>
-                                        </a>
-                                    </div>
                                 </div>
                                 <div class="ibox-content">
                                     <form method="post" autocomplete="off">
@@ -54,41 +35,36 @@
                                                 class="col-sm-2 col-form-label">픽토그램명</label>
 
                                             <div class="col-sm-10"><input type="text" class="form-control"
-                                                    ref="pictogram_name" name="pictogram_name"></div>
+                                                    ref="pictogram_name" id="pictogram_name" name="pictogram_name"></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
-                                        <div class="form-group  row">
+                                    </form>
+                                    <form enctype="multipart/form-data" ref="imageForm" id="file-form"> 
+                                        <div class="form-group row">
                                             <label class="col-sm-2 col-form-label">픽토그램</label>
                                             <div class="col-sm-10"><input type="file" class="form-control"
-                                                    ref="image_path" name="image_path"
+                                                    ref="image_path" name="image_path" accept="image/*" id="image_path"
                                                     placeholder="픽토그램 폴더에서 이미지 파일을 선택해 주세요"></div>
                                         </div>
                                         <div class="form-group row"><label class="col-sm-3 col-form-label text-navy">이미지
                                                 파일만 등록해 주세요.</label>
                                             <div class="col-sm-9">
                                                 <div class="row">
-                                                    <div class="col-md-2"><input type="button" placeholder=" .col-md-2"
-                                                            class="btn btn-primary btn-sm" value="등록"
-                                                            @click="submitForm"></div>
+                                                    <div class="col-md-2"><input type="button" placeholder=".col-md-2"
+                                                        class="btn btn-primary btn-sm" value="등록" @click="submitForm">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <%- include('footer') %>
             </div>
         </div>
-    </div>
-    <div class="footer">
-        <div class="float-right">
-            10GB of <strong>250GB</strong> Free.
-        </div>
-        <div>
-            <strong>Copyright</strong> Example Company &copy; 2014-2018
-        </div>
-    </div>
-    </div>
-    </div>
     </div>
 
     <!-- Mainly scripts -->
@@ -114,75 +90,76 @@
             },
             methods: {
                 checkForm() {
-                    if (this.$refs.pictogram_name.value === '') {
+                    if (!this.$refs.pictogram_name.value) {
                         alert('픽토그램 이름을 입력해 주세요');
                         this.$refs.pictogram_name.focus();
                         return false;
-                    } else if (this.$refs.image_path.value === '') {
+                    } else if (!this.$refs.image_path.value) {
                         alert('픽토그램 이미지를 선택해주세요.');
-                        this.$refs.image_path.focus();
                         return false;
-                    } else {
-                        file = this.$refs.image_path.files[0].name;
-                        console.log('file=' + file);
-                        let validate = file.toLowerCase();
-                        let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
-                        let result = reg.test(validate); // 이미지 파일 확장자 확인
-                        console.log(result)
-                        if (result) {
-                            this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
-                            this.pictogram.image_path = file;
-                            console.log(`전송객체: ${this.pictogram}`);
-                            console.log(this.pictogram);
-                        } else {
-                            alert('이미지 파일만 등록해주세요');
+                    } 
+
+                    const imgFile = document.getElementById('image_path');
+                    const fileForm = /(.*?)\.(jpg|jpeg|png|gif|bmp|jfif)$/;
+                    const maxSize = 5 * 1024 * 1024;
+                    let fileSize;
+
+                    if (imgFile.value) {
+                        // 확장자, 사이즈 체크
+                        fileSize = imgFile.files[0].size;
+                        if (!imgFile.value.match(fileForm)) {
+                            alert("이미지 파일만 업로드 가능합니다.");
+                            return false;
+                        } else if (fileSize > maxSize) {
+                            alert("파일 사이즈는 5MB까지 가능합니다.");
                             return false;
                         }
+                    return true;
                     }
                 },
-                clearForm() {
+                resetForm() {
                     this.$refs.pictogram_name.value = '';
                     this.$refs.image_path.value = '';
                 },
                 submitForm() {
+                    const check = this.checkForm();
+                    if (!check) return false;
 
-                    if (this.$refs.pictogram_name.value === '') {
-                        alert('픽토그램 이름을 입력해 주세요');
-                        this.$refs.pictogram_name.focus();
-                        return false;
-                    } else if (this.$refs.image_path.value === '') {
-                        alert('픽토그램 이미지를 선택해주세요.');
-                        this.$refs.image_path.focus();
-                        return false;
-                    }
-                    file = this.$refs.image_path.files[0].name;
-                    console.log('file=' + file);
-                    let validate = file.toLowerCase();
-                    let reg = /(.*?)\.(jpg|jpeg|png|gif|bmp)$/;
-                    let result = reg.test(validate); // 이미지 파일 확장자 확인
-                    console.log(result)
-                    if (result) {
-                        this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
-                        this.pictogram.image_path = file;
-                        (async () => {
-                            try {
-                                let result = await axios.post('/pictograms', this.pictogram);
-                                console.log(result);
-                                if (result.data.code === 201) {
-                                    alert('등록 성공');
-                                    this.clearForm();
-                                    // location.reload(); // alert 후 reload처리
-                                } else {
-                                    alert(`등록 실패`);
-                                }
-                            } catch (err) {
-                                console.log(err);
+                    const form = this.$refs.imageForm;
+                    const formData = new FormData(form);
+                    console.log('이게 뭔데?', formData);
+                    
+                    (async () => {
+                        try {
+                            console.log('등록전에 확인', this.pictogram);
+                            const file = await axios.post('/files/upload/pictograms', formData);
+                            console.log('픽토그램 파일 업로드 결과', file.data);
+                            
+                            if(file.data.code !== 200) {
+                                alert('픽토그램 등록 실패');
+                                return false;
                             }
-                        })();
-                    } else {
-                        alert('이미지 파일만 등록해주세요');
-                        return false;
-                    }
+                            let path = file.data.message;
+                            // 아래 경로는 개발버전(windows) 코드
+                            // path = path.split('\\');
+
+                            path = path.split('/');
+
+                            this.pictogram.image_path = path[3];
+                            this.pictogram.pictogram_name = this.$refs.pictogram_name.value;
+
+                            let result = await axios.post('/pictograms', this.pictogram);
+                            console.log(result);
+                            if (result.data.code === 201) {
+                                alert('등록 성공');
+                                this.resetForm();
+                            } else {
+                                alert('이미 등록된 픽토그램입니다');
+                            }
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    })();
                 }
             },
         }).$mount('#vm');

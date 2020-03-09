@@ -4,13 +4,9 @@ const jwt = require('jsonwebtoken');
 exports.verifyToken = (req, res, next) => {
     try {
         // req.decoded는 true/false ? 
-        console.log('리퀘스트헤더')
-        console.log(req.headers)
-        console.log(req.headers.authorization)
-        // req.decoded = jwt.verify(req.headers.authorization, process.env.YAKSSOK_SECRET)
+        console.log('리퀘스트헤더', req.headers);
         req.decoded = jwt.verify(req.headers.authorization, process.env.YAKSSOK_SECRET)
-        console.log('토큰의 decoded값')
-        console.log(req.decoded);
+        
         // 자바스크립트에서 함수는 값이기 때문에 리턴값으로 사용가능
         return next();
     } catch (err) {
@@ -31,6 +27,7 @@ exports.verifyToken = (req, res, next) => {
         }
     }
 };
+
 // access token 발급
 exports.access_token = (user) => {
     try {
@@ -38,11 +35,16 @@ exports.access_token = (user) => {
         const token = jwt.sign({
             id: user.id,
         }, process.env.YAKSSOK_SECRET, {
-            expiresIn: '2hour',
+            expiresIn: '2h',
             issuer: 'YAKSSOK'
         });
         return token;
     } catch (err) {
-        console.log(err);
+        res.json({
+            code: 500,
+            message: '서버에서 에러가 발생했습니다.'
+        });
+        console.log('토큰 발급 중 에러 발생', err);
+        next(err);
     }
 }

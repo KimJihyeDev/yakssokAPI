@@ -6,49 +6,54 @@ const Op = models.Sequelize.Op;
 const Review = models.Review; // 상품평
 const Comment = models.Comment; // 상품평 댓글
 const User = models.User; // 상품평 댓글
+const error = {
+    code: 500,
+    message: '서버에서 에러가 발생했습니다.'
+};
 
-// 상품평 읽어오기
-// 상품 정보 읽어올 때 
-router.get('/', async (req, res) => {
 
+// 리뷰 
+// 상품 정보 읽어올 때
+// 삭제된 회원의 글일 경우 user 정보가 null이 되므로 paranoid: false처리
+router.get('/', async (req, res, next) => {
     try {
-        let result = await Review.findAll({
+        const result = await Review.findAll({
             where: { productId: req.query.productId },
             include: [
-                { model: User },
-                { model: Comment }
+                {
+                    model: User,
+                    attributes: ['user_id'],
+                    paranoid: false  // 삭제된 회원의 글도 가져와야 한다
+                },
+                // 댓글에서도 user_id를 가지고 와야 한다
+                // { 
+                //     model: Comment,
+                //     include: [{
+                //             model: User,
+                //             attributes: ['user_id'],
+                //             paranoid: false  // 삭제된 회원의 글도 가져와야 한다
+                //     }],
+                // }
             ],
             order: [['id', 'DESC']], // 리뷰는 최신순으로 가져온다(댓글은 반대)
             limit: 10
         });
-        console.log('review결과', result);
-
-        // user객체에서 user_id를 추출한다
-        if (result.length > 0) {
-            result.forEach(item => {
-                item.dataValues.user_id = item.dataValues.user.user_id;
-                delete item.dataValues.user
-            });
-        }
-        console.log('삭제확인', result);
-
-        // res.json(result);
+        console.log('상품평 조회', result);
         res.json({
             code: 200,
             result
         });
     } catch (err) {
-        console.log(err);
-        res.json({
-            code: 500,
-            message: '서버에서 에러가 발생했습니다.'
-        });
+        console.log('상품평 로딩 에러 발생', err);
+        res.json(error);
+        next(err);
     }
 });
 
-// 상품평 작성하기
+// 리뷰 작성하기
 // 토큰의 유효성은 여기서 따지지x(해당 라우트에 진입할 때 검사했음)
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
+    console.log('리뷰', req.body);
     try {
         let result = await Review.create({
             title: req.body.title,
@@ -63,39 +68,38 @@ router.post('/', async (req, res) => {
         result = await Review.findAll({
             where: { productId: req.body.productId.id },
             include: [
-                { model: User },
-                { model: Comment }
+                {
+                    model: User,
+                    attributes: ['user_id'],
+                    paranoid: false  // 삭제된 회원의 글도 가져와야 한다
+                },
+                // { 
+                //     model: Comment,
+                //     include: [{
+                //             model: User,
+                //             attributes: ['user_id'],
+                //             paranoid: false  // 삭제된 회원의 글도 가져와야 한다
+                //     }],
+                // }
             ],
             order: [['id', 'DESC']], // 리뷰는 최신순으로 가져온다(댓글은 반대)
             limit: 10
         });
         console.log('review결과', result);
 
-        // user객체에서 user_id를 추출한다
-        if (result.length > 0) {
-            result.forEach(item => {
-                item.dataValues.user_id = item.dataValues.user.user_id;
-                delete item.dataValues.user
-            });
-        }
-        console.log('삭제확인', result);
-
         res.status(201).json({
             code: 201,
-            message: '리뷰 등록 성공',
             result
-        })
+        });
     } catch (err) {
-        console.log(err);
-        res.json({
-            code: 500,
-            message: '서버에서 에러가 발생했습니다.'
-        })
+        console.log('리뷰 등록 에러 발생', err);
+        res.json(error);
+        next(err);
     }
-})
+});
 
 // 상품평 삭제
-router.delete('/delete/:productId/:reviewId', async (req, res) => {
+router.delete('/delete/:productId/:reviewId', async (req, res, next) => {
     try {
         let result = await Review.destroy({
             where: { id: req.params.reviewId }
@@ -104,41 +108,40 @@ router.delete('/delete/:productId/:reviewId', async (req, res) => {
         console.log('req.params.productId확인', req.params.productId);
 
         result = await Review.findAll({
-            where: { productId: req.params.productId },
+            where: { productId: req.params.productId},
             include: [
-                { model: User },
-                { model: Comment }
+                {
+                    model: User,
+                    attributes: ['user_id'],
+                    paranoid: false  // 삭제된 회원의 글도 가져와야 한다
+                },
+                // { 
+                //     model: Comment,
+                //     include: [{
+                //             model: User,
+                //             attributes: ['user_id'],
+                //             paranoid: false  // 삭제된 회원의 글도 가져와야 한다
+                //     }],
+                // }
             ],
             order: [['id', 'DESC']], // 리뷰는 최신순으로 가져온다(댓글은 반대)
             limit: 10
         });
-        console.log('review결과', result);
-
-        if (result.length > 0) {
-            result.forEach(item => {
-                item.dataValues.user_id = item.dataValues.user.user_id;
-                delete item.dataValues.user
-            });
-        }
 
         res.json({
             code: 200,
             result
         });
-
     } catch (err) {
-        res.json({
-            code: 500,
-            message: '서버에서 에러가 발생하였습니다.'
-        })
-        console.log(err);
+        res.json(error);
+        console.log('상품평 삭제 에러 발생', err);
+        next(err);
     }
 });
 
 // 상품평 수정
 // router.patch('/delete', async (req,res) => {
 //     try {
-//         console.log('수정하고자 하는 id')
 //         console.log(req.query.review_id)
 //         const result = await Review.update({
 //             where: { id: req.query.review_id }
@@ -152,52 +155,38 @@ router.delete('/delete/:productId/:reviewId', async (req, res) => {
 
 // 코멘트 불러오기
 // 어느 글의 코멘트인지 알아야 한다
-router.get('/comments', async (req, res) => {
+router.get('/comments', async (req, res, next) => {
     try {
-        // 이제 user정보에서 user_id만 추출하고 
-        // user객체는 삭제한다
-        console.log('리뷰id확인');
-        console.log(req.query.review_id);
         const id = req.query.review_id;
         const result = await Comment.findAll({
             include: [
-                { model: User }
+                {
+                    model: User,
+                    attributes: ['user_id'],
+                    paranoid: false 
+                }
             ],
             where: {
                 reviewId: id
             },
             order: [['id', 'ASC']]
-        })
+        });
 
-        console.log('해당 리뷰의 댓글');
-        console.log(result);
-
-        if (result.length > 0) {
-            result.forEach(item => {
-                console.log('dataValues확인', item.dataValues);
-                item.dataValues.user_id = item.dataValues.user.user_id;
-                delete item.dataValues.user
-            });
-        }
-        console.log('삭제확인')
-        console.log(result);
+        console.log('댓글 조회 결과', result);
         // 리뷰의 댓글이 없을 경우에는 [] 이 반환 -> 클라이언트에서 처리
         res.json({
             code: 200,
             result
         });
-
     } catch (err) {
-        console.log(err);
-        res.json({
-            code: 500,
-            message: '서버에서 에러가 발생했습니다.'
-        })
+        res.json(error);
+        console.log('댓글 삭제 오류 발생', err);
+        next(err);
     }
 })
 
 // 코멘트 작성하기
-router.post('/comments', async (req, res) => {
+router.post('/comments', async (req, res, next) => {
     try {
         console.log(req.body)
         let result = await Comment.create({
@@ -211,7 +200,11 @@ router.post('/comments', async (req, res) => {
         // 코멘트 리스트를 새로 불러와서 보내준다.
         result = await Comment.findAll({
             include: [
-                { model: User }
+                { 
+                    model: User,
+                    attributes: ['user_id'],
+                    paranoid: false 
+                }
             ],
             where: {
                 reviewId: req.body.reviewId
@@ -219,38 +212,20 @@ router.post('/comments', async (req, res) => {
             order: [['id', 'ASC']],
         });
 
-        console.log('해당 리뷰의 댓글');
-        console.log(result);
-
-        if (result.length > 0) {
-            result.forEach(item => {
-                item.dataValues.user_id = item.dataValues.user.user_id;
-                delete item.dataValues.user
-            });
-        }
-        console.log('삭제확인')
-        console.log(result);
-
         res.status(201).json({
             code: 201,
-            message: '댓글 등록 성공',
             result
         });
-
     } catch (err) {
-        console.log(err);
-        res.json({
-            code: 500,
-            message: '서버에서 에러가 발생했습니다.'
-        })
+        res.json(error);
+        console.log('코멘트 등록 에러 발생', err);
+        next(err);
     }
 })
 
 // 코멘트 삭제하기
-router.delete('/deleteComment/:reviewId/:commentId', async (req, res) => {
+router.delete('/deleteComment/:reviewId/:commentId', async (req, res, next) => {
     try {
-        console.log('모튼 파라확인', req.params);
-        console.log('이게 문제인거 같음', req.params.commentId);
         console.log('파라미터, 리뷰', req.params.reviewId);
         let result = await Comment.destroy({
             where: { id: req.params.commentId }
@@ -260,7 +235,11 @@ router.delete('/deleteComment/:reviewId/:commentId', async (req, res) => {
         // 새로 코멘트 리스트를 전달해준다
         result = await Comment.findAll({
             include: [
-                { model: User }
+                {
+                    model: User,
+                    attributes: ['user_id'],
+                    paranoid: false 
+                }
             ],
             where: {
                 reviewId: req.params.reviewId
@@ -268,27 +247,14 @@ router.delete('/deleteComment/:reviewId/:commentId', async (req, res) => {
             order: [['id', 'ASC']],
         });
 
-
-        if (result.length > 0) {
-            result.forEach(item => {
-                item.dataValues.user_id = item.dataValues.user.user_id;
-                delete item.dataValues.user
-            });
-        }
-        console.log('삭제확인')
-        console.log(result);
-
         res.json({
             code: 200,
             result
         });
-
     } catch (err) {
-        res.json({
-            code: 500,
-            message: '서버에서 에러발생'
-        })
-        console.log(err);
+        res.json(error);
+        console.log('코멘트 삭제 에러 발생', err);
+        next(err);
     }
 });
 

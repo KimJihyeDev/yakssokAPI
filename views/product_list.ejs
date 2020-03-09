@@ -126,7 +126,11 @@
                         try {
                             const result = await axios.get('/products/all')
                             console.log(result);
-                            this.product = result.data;
+
+                            const { code, message, products } = result.data
+                            code === 200
+                               ? this.product = products
+                               : alert(message)
                         } catch (err) {
                             console.log(err);
                         }
