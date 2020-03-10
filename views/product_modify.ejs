@@ -385,26 +385,19 @@
                         (async () => {
                             try {
                                 let result = await axios.post('/files/upload', formData);
-                                console.log(`상품이미지전송결과=`, result.data);
 
                                 if (result.data.code === 200) {
                                     let path = result.data.message;
-                                    console.log('파일 업로드가 성공해서 받은 리턴값*');
-                                    console.log(path);
 
                                     // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다!!
-                                    // path = path.split('/') // production 코드(Linux)
-                                    path = path.split('\\') // 개발버전 코드
-                                    console.log(path[3]);
+                                    path = path.split('/') // production 코드(Linux)
+                                    // path = path.split('\\') // 개발버전 코드
 
                                     this.product.product_image = path[3];
-                                    console.log('이미지확인')
-                                    console.log(this.product.product_image);
 
                                     // 상품 등록 정보 수정 요청
-                                    console.log('수정 요청 보냄')
                                     result = await axios.patch(`/products/modify?id=${param}`, this.product);
-                                    console.log(result);
+                                    
                                     if (result.data.code === 200) {
                                         alert('수정하였습니다.');
                                         location.href = '/product_list';
