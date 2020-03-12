@@ -15,28 +15,16 @@ const db = {};
 // 비밀번호 노출을 막기위해 비밀번호를 환경변수로 분리하여 객체 생성
 
 let password;
-    env == 'development'
-        ? password = process.env.DB_PWD
-        : password = process.env.DB_PRODUCTION
+
+env == 'development'
+    ? password = process.env.DB_PWD
+    : password = process.env.DB_PRODUCTION
 
 var sequelize = new Sequelize(
     config.database,
     config.username,
     password, config,
 )
-// if (env == 'development') {
-//     var sequelize = new Sequelize(
-//         config.database,
-//         config.username,
-//         process.env.DB_PWD, config,
-//     )
-// } else {
-//     var sequelize = new Sequelize(
-//         config.database,
-//         config.username,
-//         process.env.DB_PRODUCTION, config,
-//     )
-// }
 
 // DB객체에 시퀄라이즈 객체를 속성에 바인딩한다.
 db.sequelize = sequelize;

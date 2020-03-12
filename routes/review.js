@@ -11,13 +11,12 @@ const error = {
     message: '서버에서 에러가 발생했습니다.'
 };
 
-
 // 리뷰 
 // 상품 정보 읽어올 때
 // 삭제된 회원의 글일 경우 user 정보가 null이 되므로 paranoid: false처리
 router.get('/', async (req, res, next) => {
     try {
-        const result = await Review.findAll({
+        const result = await Review.findAndCountAll({
             where: { productId: req.query.productId },
             include: [
                 {
@@ -65,7 +64,7 @@ router.post('/', async (req, res, next) => {
         console.log(result);
 
         // 등록 후 리뷰 리스트를 검색해서 보낸다
-        result = await Review.findAll({
+        result = await Review.findAndCountAll({
             where: { productId: req.body.productId.id },
             include: [
                 {
@@ -73,14 +72,6 @@ router.post('/', async (req, res, next) => {
                     attributes: ['user_id'],
                     paranoid: false  // 삭제된 회원의 글도 가져와야 한다
                 },
-                // { 
-                //     model: Comment,
-                //     include: [{
-                //             model: User,
-                //             attributes: ['user_id'],
-                //             paranoid: false  // 삭제된 회원의 글도 가져와야 한다
-                //     }],
-                // }
             ],
             order: [['id', 'DESC']], // 리뷰는 최신순으로 가져온다(댓글은 반대)
             limit: 10
@@ -107,7 +98,7 @@ router.delete('/delete/:productId/:reviewId', async (req, res, next) => {
         console.log('삭제결과', result);
         console.log('req.params.productId확인', req.params.productId);
 
-        result = await Review.findAll({
+        result = await Review.findAndCountAll({
             where: { productId: req.params.productId},
             include: [
                 {
@@ -139,26 +130,13 @@ router.delete('/delete/:productId/:reviewId', async (req, res, next) => {
     }
 });
 
-// 상품평 수정
-// router.patch('/delete', async (req,res) => {
-//     try {
-//         console.log(req.query.review_id)
-//         const result = await Review.update({
-//             where: { id: req.query.review_id }
-//         })
-//         console.log(result);
-
-//     } catch(err) {
-//         console.log(err);
-//     }
-// })
 
 // 코멘트 불러오기
 // 어느 글의 코멘트인지 알아야 한다
 router.get('/comments', async (req, res, next) => {
     try {
         const id = req.query.review_id;
-        const result = await Comment.findAll({
+        const result = await Comment.findAndCountAll({
             include: [
                 {
                     model: User,
@@ -198,7 +176,7 @@ router.post('/comments', async (req, res, next) => {
         console.log(result);
 
         // 코멘트 리스트를 새로 불러와서 보내준다.
-        result = await Comment.findAll({
+        result = await Comment.findAndCountAll({
             include: [
                 { 
                     model: User,
@@ -233,7 +211,7 @@ router.delete('/deleteComment/:reviewId/:commentId', async (req, res, next) => {
         console.log('코멘트 삭제 결과', result);
 
         // 새로 코멘트 리스트를 전달해준다
-        result = await Comment.findAll({
+        result = await Comment.findAndCountAll({
             include: [
                 {
                     model: User,

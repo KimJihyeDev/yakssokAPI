@@ -28,7 +28,7 @@ router.get('/', async (req, res, next) => {
         });
     } catch (err) {
         reres.json(error);
-        console.log('상품 정보 로딩 에러 발생', err);
+        console.log('제품 정보 로딩 에러 발생', err);
         next(err);
     }
 });
@@ -62,7 +62,7 @@ router.get('/search', async (req, res, next) => {
         const result = await Product.findAll({
             where: {
                 product_name: {
-                    [Op.like]: `%${keyword}%`
+                    [Op.like]: `%${ keyword }%`
                 }
             }
         });
@@ -81,8 +81,24 @@ router.get('/search', async (req, res, next) => {
 })
 
 // 제품 등록 정보 수정(픽토그램, 성분 정보 제외)
+// 제품명을 수정할 경우 다른 제품이 이미 사용 중인 이름인지 확인
 router.patch('/modify', async (req, res, next) => {
     try {
+        const check = await Product.findOne({
+            where: { 
+                id: { [Op.not]: req.query.id },
+                product_name: req.body.product_name 
+            }
+        });
+
+        if(check) {
+            return res.json({
+                code: 409,
+                message: '같은 이름의 제품이 있습니다.'
+            });
+        }
+        
+        // 같은 이름의 제품이 없을 경우 수정
         const result = Product.update(
             {
                 parent_category: req.body.parent_category,
@@ -101,7 +117,7 @@ router.patch('/modify', async (req, res, next) => {
         console.log('수정결과', result);
         res.json({
             code: 200,
-            message: '상품정보 수정 성공'
+            message: '제품정보 수정 성공'
         });
     } catch (err) {
         res.json(error);
@@ -168,11 +184,11 @@ router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
     }
 });
 
-// 단일 상품 조회
+// 단일 제품 조회
 // 와일드카드 패턴이 적용되었으므로 최하단에 작성(같은 전송방식에만 해당. get, post, patch...)
 router.get('/:id', async (req, res, next) => {
     try {
-        // 상품, 성분 정보 가져오기
+        // 제품, 성분 정보 가져오기
         // 리뷰는 여기서 가져오면X. limit와 order조건도 줘야 하므로
         const product = await Product.findByPk(req.params.id,
             {
@@ -188,12 +204,12 @@ router.get('/:id', async (req, res, next) => {
         });
     } catch (err) {
         res.json(error);
-        console.log('단일 상품 조회 에러 발생', err);
+        console.log('단일 제품 조회 에러 발생', err);
         next(err);
     }
-})
+});
 
-// 상품등록
+// 제품 등록
 router.post('/', async (req, res, next) => {
     try {
         const isProduct = await Product.findOrCreate({
@@ -221,7 +237,7 @@ router.post('/', async (req, res, next) => {
                 if(!created) {
                     res.json({
                         code: 409,
-                        message: '이미 등록된 상품입니다.'
+                        message: '이미 등록된 제품입니다.'
                     });
                 }
 
@@ -255,9 +271,7 @@ router.post('/', async (req, res, next) => {
                             }
                         )
                     }
-
                     const ingredients = req.body.ingredients;
-                    console.log(`입력받은 성분`, ingredients);
 
                     for (idx in ingredients) {
                         result = await Ingredient.create({
@@ -275,7 +289,7 @@ router.post('/', async (req, res, next) => {
             })
     } catch (err) {
         res.json(error);
-        console.log('상품 등록 에러 발생', err);
+        console.log('제품 등록 에러 발생', err);
         next(err);
     }
 })

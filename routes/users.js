@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const models = require('../models/index');
-const Sequelize = models.Sequelize;
 const User = models.User // users 테이블 객체
 const bcrypt = require('bcrypt');
 // const jwt = require('jsonwebtoken');
@@ -39,7 +38,7 @@ router.post('/', async (req, res, next) => {
     if (userId) {
       return res.json({
         code: 409,
-        message: '사용인 아이디입니다.'
+        message: '사용인 중인 아이디입니다.'
       });
     }
 
@@ -51,7 +50,7 @@ router.post('/', async (req, res, next) => {
     if (email) {
       return res.json({
         code: 409,
-        message: '이미 사용인 이메일입니다.'
+        message: '이미 사용 중인 이메일입니다.'
       });
     }
 
@@ -139,6 +138,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 // 사용자 프로필 조회(토큰 유효성은 token에서 처리)
+// attribute처리필요
 router.post('/profile', async (req, res, next) => {
   try {
     const user = await User.findByPk(req.body.id);
@@ -148,13 +148,13 @@ router.post('/profile', async (req, res, next) => {
     const { id, user_id, email } = user;
 
     if (user) {
-      return res.json({
+      res.json({
         code: 200,
         email
       });
     }
     else {
-      return res.json({
+      res.json({
         code: 403,
         message: '사용자 정보가 없습니다.'
       });
@@ -325,7 +325,7 @@ router.post('/resetPwd', async (req, res, next) => {
         }
         else {
           console.log('Email sent: ' + info.response);
-          return res.json({
+          res.json({
             code: 200,
             message: '비밀번호 재설정 메일을 전송하였습니다.'
           });

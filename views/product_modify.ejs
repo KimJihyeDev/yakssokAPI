@@ -357,28 +357,27 @@
                     const check = this.checkForm();
                     if (!check) return false;
 
-                    // 이미지폼 처리
                     // 이미지를 변경하지 않았다면 파일 업로드 없이 상품정보만 변경
                     if (!this.$refs.product_image.value) {
                         (async () => {
                             try {
                                 // 상품 등록 정보 수정 요청
-                                console.log('수정 요청 보냄')
                                 result = await axios.patch(`/products/modify?id=${param}`, this.product);
-                                console.log(result);
-                                if (result.data.code === 200) {
+
+                                const { code, message } = result.data;
+                                if (code === 200) {
                                     alert('수정 성공');
                                     location.href = '/product_list';
                                 } else {
-                                    alert('수정에 실패했습니다. 다시 시도해 주세요.');
+                                    alert(message);
                                 }
-
                             } catch (err) {
                                 alert(result.data.message);
                                 console.log(err);
                             }
                         })();
                     } else {
+                        // 이미지를 수정한 경우
                         const form = this.$refs.imageForm;
                         const formData = new FormData(form);
 
@@ -389,23 +388,24 @@
                                 if (result.data.code === 200) {
                                     let path = result.data.message;
 
-                                    // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다!!
+                                    // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다
                                     path = path.split('/') // production 코드(Linux)
                                     // path = path.split('\\') // 개발버전 코드
 
                                     this.product.product_image = path[3];
 
                                     // 상품 등록 정보 수정 요청
-                                    result = await axios.patch(`/products/modify?id=${param}`, this.product);
-                                    
-                                    if (result.data.code === 200) {
+                                    result = await axios.patch(`/products/modify?id=${ param }`, this.product);
+                                    const { code, message } = result.data;
+
+                                    if (code === 200) {
                                         alert('수정하였습니다.');
                                         location.href = '/product_list';
                                     } else {
-                                        alert('수정에 실패했습니다. 다시 시도해 주세요.');
+                                        alert(message);
                                     }
                                 } else {
-                                    alert(result.data.message);
+                                    alert(message);
                                 }
                             } catch (err) {
                                 console.log(err);
