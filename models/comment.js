@@ -1,4 +1,4 @@
-module.exports =(sequelize,DataTypes) => {
+module.exports =(sequelize, DataTypes) => {
 
     return sequelize.define('comment',{
         contents: {
@@ -12,4 +12,4 @@ module.exports =(sequelize,DataTypes) => {
         paranoid:true
     });
 };
-// article과 1 : N의 관계를 맺는 comment
+// review 1 : N의 관계를 맺는 comment

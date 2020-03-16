@@ -1,6 +1,5 @@
 module.exports = (sequelize,DataTypes) =>{
     // users 테이블과 맵핑되는 user 모델 정의
-    // 테이블명에는 자동으로 s가 붙는다
     return sequelize.define('user',{
         user_id:{
             type:DataTypes.STRING(10),
@@ -8,7 +7,7 @@ module.exports = (sequelize,DataTypes) =>{
             unique:true,
         },
         user_pwd:{
-            type:DataTypes.STRING(100), // 해시암호화 했으므로 길이에 주의
+            type:DataTypes.STRING(100), 
             allowNull:false,
         },
         email:{

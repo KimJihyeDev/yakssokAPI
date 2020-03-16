@@ -3,11 +3,9 @@ const jwt = require('jsonwebtoken');
 // 토큰 유효성 검사
 exports.verifyToken = (req, res, next) => {
     try {
-        // req.decoded는 true/false ? 
         console.log('리퀘스트헤더', req.headers);
         req.decoded = jwt.verify(req.headers.authorization, process.env.YAKSSOK_SECRET)
         
-        // 자바스크립트에서 함수는 값이기 때문에 리턴값으로 사용가능
         return next();
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
@@ -19,7 +17,6 @@ exports.verifyToken = (req, res, next) => {
         } else {
             // 401에러가 난 경우는 토큰을 전송하지 않은 경우가 대부분이니 주의.
             // 반드시 헤더에 토큰을 넣어서 보낼 것.
-            console.log('유효하지 않은 토큰');
             return res.json({
                 code: 401,
                 message: '유효하지 않은 토큰입니다. 다시 로그인해 주세요.'

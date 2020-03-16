@@ -181,7 +181,7 @@
                                                     </div>
                                                     <label class="col-sm-1 col-form-label"
                                                         :class="{ 'not-visible' : index > 0 }">
-                                                        %영양소기준치<span class="text-danger">*</span>
+                                                        %영양소기준치
                                                     </label>
                                                     <div class="col-md-3"><input type="number" placeholder="%영양소기준치"
                                                             class="form-control" v-model="item.daily_value">
@@ -385,7 +385,7 @@
                             if (code === 200) {
                                 let path = file.data.message;
 
-                                // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다!!
+                                // Linux에서는 경로가 \(역슬레시)가 아니라 /로 반환된다
                                 path = path.split('/') // production 코드(Linux)
                                 // path = path.split('\\') // 개발버전 코드
 
@@ -415,10 +415,8 @@
                             const { code, message } = product.data;
 
                             if (code === 200) {
-                                // 제품 등록을 위해 잠시 주석처리
-                                // this.resetForm();
-                                // alert('제품 등록성공');
-                                console.log('등록성공');
+                                this.resetForm();
+                                alert('제품 등록성공');
                             } else {
                                 alert(message);
                             }

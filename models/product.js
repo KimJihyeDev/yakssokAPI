@@ -1,6 +1,5 @@
-module.exports=(sequelize,DataTypes)=>{
-    // 테이블과 맵핑되는 상품 모델
-    // 해시태그는 N:M 관계 테이블로 따로 작성
+module.exports=(sequelize, DataTypes)=>{
+    // 테이블과 맵핑되는 제품 모델
     return sequelize.define('product',{
       
         parent_category:{ // 제품 카테고리(상위)
@@ -18,12 +17,6 @@ module.exports=(sequelize,DataTypes)=>{
         }, 
         product_image:{ // 제품 이미지 이름
             type:DataTypes.STRING(100),
-                // get: function () {
-                //     return JSON.parse(this.getDataValue('value'));
-                // },
-                // set: function (value) {
-                //     this.setDataValue('value', JSON.stringify(value));
-                // },
             allowNull:false,
             unique:true,
         },
@@ -51,15 +44,17 @@ module.exports=(sequelize,DataTypes)=>{
             type:DataTypes.INTEGER,
             allowNull:false,
         },
-        // pictogram:{ // 픽토그램
-        //     type:DataTypes.STRING(50),
-        //     allowNull:true,
-        // },
-        rating:{ // 별점
+        like_count:{ // 좋아요
             type:DataTypes.INTEGER,
             allowNull:true,
-            defaultValue:0 // default 설정이 적용되는지 확인
+            defaultValue:0 
         },
+        dislike_count:{ // 싫어요
+            type:DataTypes.INTEGER,
+            allowNull:true,
+            defaultValue:0 
+        },
+        
     },{     
         charset: 'utf8',
         collate: 'utf8_unicode_ci',

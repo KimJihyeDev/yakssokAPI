@@ -5,6 +5,8 @@ const Sequelize = models.Sequelize;
 const sequelize = models.sequelize;
 const Op = Sequelize.Op;
 const Product = models.Product;
+const User = models.User;
+const UserProducts = models.UserProducts;
 const Ingredient = models.Ingredient;
 const Pictogram = models.Pictogram; // N:M 관계를 맺은 테이블
 const error = {
@@ -15,31 +17,68 @@ const error = {
 
 // 메인 화면에 뿌려질 제품 리스트 가져오기
 router.get('/', async (req, res, next) => {
+    const id = req.query.id;
     try {
-        let products = await Product.findAndCountAll({
-            order: [['id', 'DESC']], // 최신 제품 
-            limit: 12,  // 제품 개수는 12개씩
-            offset: req.query.offSet * 12,
-        });
-        console.log('제품 검색', products);
+        let products;
+
+        // 로그인 한 사용자의 경우
+        if(id) {
+            products = await Product.findAndCountAll({
+                order: [['id', 'DESC']], // 최신 제품 
+                limit: 12,  // 제품 개수는 12개씩
+                offset: req.query.offSet * 12,
+                include: {
+                    model: User,
+                    attributes: ['id']
+                }
+            });
+
+            // 가져온 결과 중 사용자가 좋아요, 싫어요가 한 제품이 있는지 알아낸다
+            const other = await Product.findAll({
+                limit: 12,  
+                offset: req.query.offSet * 12,
+                include: {
+                    model: User,
+                    attributes: ['id'],
+                    where: { id }
+                }
+            });
+
+            if(other.length > 0 ) {
+                // 좋아요, 싫어요를 하지 않은 경우에는 빈배열
+                products.like = other[0].getDataValue('users')[0].getDataValue('user_products');
+
+                products.like = [];
+                other.forEach(item => {
+                    products.like.push(item.getDataValue('users')[0].getDataValue('user_products'))
+                });
+            }
+        }
+
+        // 로그인 하지 않은 사용자의 경우
+        if(!id) {
+            products = await Product.findAndCountAll({
+                order: [['id', 'DESC']], // 최신 제품 
+                limit: 12,  // 제품 개수는 12개씩
+                offset: req.query.offSet * 12,
+            });
+        }
         res.json({
             code: 200,
             products
         });
     } catch (err) {
-        reres.json(error);
+        res.json(error);
         console.log('제품 정보 로딩 에러 발생', err);
         next(err);
     }
 });
 
-// 관리자 페이지 제품 리스트 (한번에 10개씩 가져오기
-// 페이징 이전에는 전부 가져오는 걸로
+// 관리자 페이지 제품 리스트 
 router.get('/all', async (req, res, next) => {
     try {
         let products = await Product.findAll({
             order: [['id', 'DESC']],
-            // limit: 10
         });
         res.json({
             code: 200,
@@ -57,9 +96,7 @@ router.get('/all', async (req, res, next) => {
 router.get('/search', async (req, res, next) => {
     try {
         const keyword = req.query.keyword;
-        console.log('제품검색')
-        console.log(keyword)
-        const result = await Product.findAll({
+        const result = await Product.findAndCountAll({
             where: {
                 product_name: {
                     [Op.like]: `%${ keyword }%`
@@ -67,8 +104,6 @@ router.get('/search', async (req, res, next) => {
             }
         });
 
-        console.log('검색결과', result);
-        // result.length > 0
         res.json({
             code: 200,
             result
@@ -148,14 +183,7 @@ router.delete('/delete', async (req, res, next) => {
 // parent_category = 2일 경우에는 child_category 조회X
 router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
     try {
-        console.log('리퀘스트쿼리')
-        console.log(req.query.offSet)
-        // findAndCountAll로 전체개수를 알아내서 12개 이상이면
-        // 클라이언트에서 더보기 버튼 활성화
 
-        // and 조건은{ , }로 연결된다(Op.and 사용x)
-        // 동물영양제 검색(id === '2')
-        // 숫자가 아니라 문자열로 넘어오는데 주의
         if (req.params.parent_id == 2) {
             products = await Product.findAndCountAll({
                 where: {
@@ -185,17 +213,15 @@ router.get('/categories/:parent_id/:child_id', async (req, res, next) => {
 });
 
 // 단일 제품 조회
-// 와일드카드 패턴이 적용되었으므로 최하단에 작성(같은 전송방식에만 해당. get, post, patch...)
 router.get('/:id', async (req, res, next) => {
     try {
-        // 제품, 성분 정보 가져오기
-        // 리뷰는 여기서 가져오면X. limit와 order조건도 줘야 하므로
         const product = await Product.findByPk(req.params.id,
             {
                 include: [
                     { model: Ingredient },
                     { model: Pictogram }
                 ],
+               
             });
 
         res.json({
@@ -246,7 +272,7 @@ router.post('/', async (req, res, next) => {
 
                 if (created) {
                     // 등록한 제품의 id를 알아낸다
-                    productId = find.dataValues.id;
+                    productId = find.getDataValue('id');
 
                     const pictogram = req.body.pictogram;
 
@@ -261,7 +287,7 @@ router.post('/', async (req, res, next) => {
                                 attributes: ['id'],
                             })
                         }
-                        pictogramId.push(result.dataValues.id); 
+                        pictogramId.push(result.getDataValue('id')); 
                     }
 
                     for (idx in pictogramId) {

@@ -149,7 +149,6 @@
                     (async () => {
                         const duplication = await this.checkDuplication();
                         if(!duplication) return false;
-                        // this.file을 file로 수정. 왜 this였는지 모르겠네;
                         const file = this.$refs.image_path.files[0];
                         const form = new FormData();
 

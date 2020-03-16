@@ -3,7 +3,6 @@ var router = express.Router();
 const models = require('../models/index');
 const User = models.User // users 테이블 객체
 const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
 const { verifyToken, access_token } = require('./middleware');
 const Op = models.Sequelize.Op;
 const jwt = require('jsonwebtoken');
@@ -54,21 +53,20 @@ router.post('/', async (req, res, next) => {
       });
     }
 
+    // 단방향 암호화(복호화불가)
     const hash = await bcrypt.hash(req.body.user_pwd, 12);
 
     const user = await User.create({
-      // 만약 클라이언트에서 객체가 아닌 다른 형태로 건네주면
-      // 어떻게 될까? -> 에러남(반드시 객체로 받아야 하는 듯)
       user_id: req.body.user_id,
       user_pwd: hash,
       email: req.body.email,
     })
-    console.log('회원가입결과' + user);
+
     const { id } = await User.findOne({
       where: { user_id: req.body.user_id }
     });
 
-    // [object SequelizeInstance:user]가 리턴됨
+    // 엑세스 토큰 발급
     const token = access_token(user);
 
     res.status(201).json({
@@ -87,11 +85,7 @@ router.post('/', async (req, res, next) => {
 // 로그인
 router.post('/login', async (req, res, next) => {
   try {
-    // 아이디/ 이메일 사용자 정보를 조회
-    // id/email 둘 다로 검색하지만 받은 정보는 1개이므로
-    // 이 정보로 or 검색을 실행한다.
     const { user_id_email } = req.body;
-    console.log('로그인 id/email 확인', user_id_email);
 
     const user = await User.findOne({
       where: {
@@ -103,7 +97,6 @@ router.post('/login', async (req, res, next) => {
     })
 
     if (user) {
-      // result는 true/false
       const result = await bcrypt.compare(req.body.user_pwd, user.user_pwd);
       const id = user.id;
       if (result) {
@@ -123,8 +116,6 @@ router.post('/login', async (req, res, next) => {
       }
 
     } else {
-      // id, email 정보가 없는 경우
-      // status(403)설정시 클라이언트에서 에러 메시지를 출력 못 함
       res.json({
         code: 403,
         message: '아이디 또는 비밀번호를 확인해 주세요.'
@@ -137,20 +128,17 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-// 사용자 프로필 조회(토큰 유효성은 token에서 처리)
-// attribute처리필요
+// 사용자 프로필 조회
 router.post('/profile', async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.body.id);
-    console.log('프로필 조회 결과', user);
-
-    //  비밀번호까지 전해주지X
-    const { id, user_id, email } = user;
+    const user = await User.findByPk(req.body.id, {
+      attributes: ['email']
+    });
 
     if (user) {
       res.json({
         code: 200,
-        email
+        user
       });
     }
     else {
@@ -169,9 +157,7 @@ router.post('/profile', async (req, res, next) => {
 // 토큰 유효성 확인용 라우트
 router.get('/token', verifyToken, async (req, res, next) => {
   try {
-    // 유효한 토큰인지 확인 -> middleware.js에서 하는 작업
     const user = await User.findByPk(req.decoded.id);
-    console.log('토큰 유효성 검사 후 유저 조회 결과', user);
 
     const { id, user_id } = user;
 
@@ -197,23 +183,17 @@ router.get('/token', verifyToken, async (req, res, next) => {
 });
 
 // 회원정보 수정(비밀번호, 이메일)
-// 이미 가입된 이메일일 경우 수정x
-// router.patch('/modify/:id', verifyToken, async (req, res, next) => {
+// 이미 다른 회원이 사용 중인 이메일인지 체크
 router.patch('/modify/:id', async (req, res, next) => {
-  console.log('회원정보수정')
   const type = req.query.type;
-  console.log('비밀번호 수정 파라미터 확인', req.params.id);
-  console.log('email확인', req.body.email);
 
   try {
     if (type === 'e') {
-      // 사용인 이메일인지 확인 후 아니라면 update
-      // 사용이라면 메시지 리턴
 
       const find = await User.findOne({
         where: { email: req.body.email }
       });
-      console.log('이메일 상태 확인', find)
+
       if (find) {
         res.json({
           code: 409,
@@ -227,7 +207,6 @@ router.patch('/modify/:id', async (req, res, next) => {
             where: { id: req.params.id }
           });
 
-        console.log('이메일 업데이트 확인', result);
         res.json({
           code: 200,
           message: '이메일을 변경하였습니다.',
@@ -235,13 +214,9 @@ router.patch('/modify/:id', async (req, res, next) => {
         });
       }
     } else if (type === 'p') {
-      // 현재 비밀번호랑 일치하는지 확인
-      // 비밀번호 암호화 해서 비교해야 함
-      // 그 후에 새 비밀번호로 변경(암호화)
-      console.log('비밀번호 비교', req.params.id);
+
       const user = await User.findByPk(req.params.id);
       const compare = await bcrypt.compare(req.body.currentPwd, user.user_pwd);
-      console.log('비밀번호 비교 결과', compare);
 
       if (compare) {
         const hash = await bcrypt.hash(req.body.pwd, 12);
@@ -275,12 +250,9 @@ router.patch('/modify/:id', async (req, res, next) => {
 });
 
 // 비밀번호 찾기 이메일 전송 라우트
-// 1. 사용자한테서 전송받은 이메일을 찾는다
-// 2. 가입된 이메일이면 비밀번호 재설정 링크를 전송
-// 3. 가입된 이메일이 아니면 에러 메시지를 보낸다.
 router.post('/resetPwd', async (req, res, next) => {
-  console.log('비번재설정 이메일', req.body.email);
   const email = req.body.email;
+
   try {
     const user = await User.findOne({
       where: { email }
@@ -318,6 +290,7 @@ router.post('/resetPwd', async (req, res, next) => {
                 <a href="${ process.env.YAKSSOK_FRONT }/auth/${ token }">
                 ${ process.env.YAKSSOK_FRONT }/auth/${ token }</a>`
       };
+
       // 메일을 발송
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
@@ -344,16 +317,15 @@ router.post('/resetPwd', async (req, res, next) => {
   }
 });
 
+// 이메일 토큰 인증 라우터(페이지 진입시 확인)
 router.get('/authToken', verifyToken, (req, res, next) => {
   console.log('토큰에서 추출한 email확인', req.decoded.email);
-  // 이메일을 user에서 찾아서
   
 }); 
 
-// 비밀번호 재설정 토큰 인증
+// 비밀번호 재설정 토큰 인증(비밀번호 재설정시 확인)
 // 비밀번호 찾기(새 비밀번호 설정)
 router.patch('/updatePwd', verifyToken, async (req, res, next) => {
-  console.log('토큰에서 추출한 email확인', req.decoded.email);
   try {
     const hash = await bcrypt.hash(req.body.pwd, 12);
 
@@ -364,7 +336,6 @@ router.patch('/updatePwd', verifyToken, async (req, res, next) => {
       { 
         where: { email: req.decoded.email }
       });
-      console.log('비밀번호 재설정 결과', user);
       res.json({
         code: 200,
         message: '비밀번호를 재설정하였습니다.'
@@ -383,7 +354,6 @@ router.delete('/deleteAccount/:id', async (req, res, next) => {
       {
         where: { id: req.params.id }
       });
-    console.log('회원 탈퇴 확인', result);
 
     res.json({
       code: 200,
