@@ -148,7 +148,7 @@
                             if(code === 200) {
                                 const { count, rows } = products;
                                 this.product = rows;
-                                this.totalPage = Math.ceil(count / perPage);
+                                this.totalPage = Math.ceil(count / this.perPage);
                                 this.currentPage = page;
                             } else {
                                 alert(message);
@@ -183,7 +183,7 @@
 
                             if(code === 200) { 
                                 this.product = rows; 
-                                this.totalPage = Math.ceil(count / perPage);
+                                this.totalPage = Math.ceil(count / this.perPage);
                             } else {
                                 alert(message);
                             }
