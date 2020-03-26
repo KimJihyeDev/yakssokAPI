@@ -122,9 +122,10 @@
                 title: '제품 리스트',
                 product: [],
                 totalPage: 0, // 전체 페이지의 개수
-                currentPage: 1,
-                pageCount: 1, // pageBlock * pageCount 
+                currentPage: 1, // 현재 페이지
+                pageCount: 1, // 이전, 다음에 사용될 변수 
                 pageBlock: 5, // 한번에 보일 페이지의 개수
+                perPage: 10, // 한 페이지당 보일 게시글의 개수
             },
             methods: {
                 go(page) {
@@ -147,7 +148,7 @@
                             if(code === 200) {
                                 const { count, rows } = products;
                                 this.product = rows;
-                                this.totalPage = Math.ceil(count / 10);
+                                this.totalPage = Math.ceil(count / perPage);
                                 this.currentPage = page;
                             } else {
                                 alert(message);
@@ -178,11 +179,11 @@
                         try {
                             const result = await axios.get(`/products/all/${ this.totalPage }`)
                             const { code, message, products } = result.data;
-                            const { count, rows}  = products;
+                            const { count, rows }  = products;
 
                             if(code === 200) { 
                                 this.product = rows; 
-                                this.totalPage = Math.ceil(count / 10);
+                                this.totalPage = Math.ceil(count / perPage);
                             } else {
                                 alert(message);
                             }

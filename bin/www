@@ -14,10 +14,10 @@ const fs = require('fs');
 // 웹소켓 모듈 추가(socket.js)
 const webSocket = require('../socket');
 
-const options = {
-	key: fs.readFileSync('./keys/private.pem'),
-	cert: fs.readFileSync('./keys/public.pem')
-};
+// const options = {
+// 	key: fs.readFileSync('./keys/private.pem'),
+// 	cert: fs.readFileSync('./keys/public.pem')
+// };
 
 
 /**
