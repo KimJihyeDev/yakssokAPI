@@ -25,7 +25,6 @@ exports.verifyToken = (req, res, next) => {
 };
 
 // access token 발급
-// exports.access_token = (user) => {
 exports.access_token = (id) => {
     try {
         // jwt 토큰 발급                         

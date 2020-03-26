@@ -27,12 +27,8 @@ router.get('/', async (req, res, next) => {
 });
 
 // 회원 가입
-// 페이스북 가입 과정 추가
 router.post('/', async (req, res, next) => {
-  const type = req.query.type;
   try {
-    // 일반 회원가입 처리
-    if(!type) {
       // 아이디 중복체크 
       const userId = await User.findOne({
         where: { user_id: req.body.user_id }
@@ -71,8 +67,8 @@ router.post('/', async (req, res, next) => {
       });
 
       // 액세스 토큰 발급
-      // const token = access_token(user);
-      const token = access_token(id);
+      const token = access_token(user);
+      // const token = access_token(id);
 
       res.status(201).json({
         code: 201,
@@ -80,28 +76,6 @@ router.post('/', async (req, res, next) => {
         token,
         id
       });
-    }
-
-    // 페이스북 회원 가입처리
-    if(type) {
-      const user = await User.create({
-        user_id: req.body.user_id,
-        authType: req.body.authType
-      });
-
-      // 회원가입했을 때는 어떤 결과가 리턴되지?
-      console.log('회원가입결과', user);
-
-      // 액세스 토큰 발급
-      // const token = access_token(id);
-
-      // console.log('페북 회원가입처리 결과', user);
-      // res.json({
-      //   code: 201,
-      //   message: '회원가입 성공', 
-      //   token
-      // })
-    }
   } catch (err) {
     console.log('회원가입 에러발생', err);
     res.json(error);
@@ -112,7 +86,6 @@ router.post('/', async (req, res, next) => {
 // 로그인
 router.post('/login', async (req, res, next) => {
   try {
-    const { user_id_email } = req.body;
 
     const user = await User.findOne({
       where: {
@@ -127,7 +100,7 @@ router.post('/login', async (req, res, next) => {
       const result = await bcrypt.compare(req.body.user_pwd, user.user_pwd);
       const id = user.id;
       if (result) {
-        token = access_token(user);
+        token = access_token(id);
 
         res.json({
           code: 200,
