@@ -31,6 +31,7 @@
         .content {
             padding-bottom: 0px;
         }
+
     </style>
 </head>
 
@@ -54,8 +55,8 @@
                                         <table class="table table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th>등록번호</th>
-                                                    <th width="40%">제품명</th>
+                                                    <th width="30%">등록번호</th>
+                                                    <th width="40%" class="justify-content-center">제품명</th>
                                                     <th>등록날짜</th>
                                                 </tr>
                                             </thead>
@@ -67,6 +68,28 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+
+                                        <!-- 페이징 처리 -->
+                                        <nav class="pagination justify-content-center">
+                                            <ul class="pagination">
+                                            <li class="page-item">
+                                                <a class="page-link" @click="go(1)">&lt;&lt;</a>
+                                            </li>
+                                            <li class="page-item" v-if="totalPage > pageBlock && pageCount != 1">
+                                                <a class="page-link" tabindex="-1" @click="decreasePageCount">이전</a>
+                                            </li>
+                                            <li class="page-item" :class="{ active: currentPage == page}" v-for="page in this.totalPage"  @click="changePage(page)"
+                                                    v-show="(page/pageBlock) > pageCount - 1 && (page/pageBlock) <= pageCount">
+                                                <a class="page-link">{{ page }}</a>
+                                            </li>
+                                            <li class="page-item" v-if="totalPage > pageBlock">
+                                                <a class="page-link" @click="incresePageCount">다음</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" @click="go(totalPage)" >&gt;&gt;</a>
+                                            </li>
+                                            </ul>
+                                        </nav>
                                     </div>
                                 </div>
                             </div>
@@ -97,34 +120,72 @@
         const vm = new Vue({
             data: {
                 title: '제품 리스트',
-                product: []
+                product: [],
+                totalPage: 0, // 전체 페이지의 개수
+                currentPage: 1,
+                pageCount: 1, // pageBlock * pageCount 
+                pageBlock: 5, // 한번에 보일 페이지의 개수
             },
             methods: {
-                moreList() {
-                    (
-                        async () => {
-                            try {
-                                const result = await axios.get('/products/all');
+                go(page) {
+                    this.changePage(page);
+                    if(page === 1) {
+                        this.pageCount = 1;
+                        this.currentPage = 1;
+                    } else {
+                        this.pageCount = Math.ceil(this.totalPage / this.pageBlock);
+                        this.currentPage = this.totalPage;
+                    }
+                },
+                changePage(page) {
+                    (async () => {
+                        try {
+                            const offSet = page - 1;
+                            const response = await axios.get(`/products/all/${ offSet }`);
+                            const { code, message, products }  = response.data;
 
-                                result.data.forEach(item => {
-                                    this.product.push(item);
-                                });
-                            } catch (err) {
-                                console.log(err);
+                            if(code === 200) {
+                                const { count, rows } = products;
+                                this.product = rows;
+                                this.totalPage = Math.ceil(count / 10);
+                                this.currentPage = page;
+                            } else {
+                                alert(message);
                             }
+                        } catch(err) {
+                            console.log(err);
                         }
-                    )();
-                }
+                    })();
+                },
+                incresePageCount() {
+                    if((this.pageBlock * this.pageCount) === this.totalPage || (this.pageBlock * this.pageCount) > this.totalPage){
+                       alert('마지막 페이지입니다.');
+                       return false;
+                    } 
+                    this.currentPage = (this.pageBlock * this.pageCount) + 1;
+                    this.pageCount++;
+                    this.changePage(this.currentPage);
+                },
+                decreasePageCount() {
+                    this.pageCount--;
+                    this.currentPage = (this.pageBlock * this.pageCount);
+                    this.changePage(this.currentPage);
+
+                },
             },
             created() {
                 (async () => {
                         try {
-                            const result = await axios.get('/products/all')
+                            const result = await axios.get(`/products/all/${ this.totalPage }`)
+                            const { code, message, products } = result.data;
+                            const { count, rows}  = products;
 
-                            const { code, message, products } = result.data
-                            code === 200
-                               ? this.product = products
-                               : alert(message)
+                            if(code === 200) { 
+                                this.product = rows; 
+                                this.totalPage = Math.ceil(count / 10);
+                            } else {
+                                alert(message);
+                            }
                         } catch (err) {
                             console.log(err);
                         }

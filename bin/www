@@ -14,6 +14,12 @@ const fs = require('fs');
 // 웹소켓 모듈 추가(socket.js)
 const webSocket = require('../socket');
 
+const options = {
+	key: fs.readFileSync('./keys/private.pem'),
+	cert: fs.readFileSync('./keys/public.pem')
+};
+
+
 /**
  * Get port from environment and store in Express.
  */
@@ -29,16 +35,13 @@ app.set('port', port);
 
 // http 웹서버(80포트) 생성
 var server = http.createServer(app);
-
 // https 웹서버(443포트) 생성
-// 나중에 인증서 받고서 처리할 것
+var https_server = https.createServer(options, app);
 
 // 웹소켓과 웹서버(현재 http) 연결 처리
-// 나중에 https로 변경할 것
 webSocket(server);
+webSocket(https_server);
 
-
-// 
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -47,6 +50,10 @@ webSocket(server);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+https_server.listen('443', () => {
+  console.log('443포트에서 실행중');
+});
 
 /**
  * Normalize a port into a number, string, or false.

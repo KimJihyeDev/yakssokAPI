@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 // 토큰 유효성 검사
 exports.verifyToken = (req, res, next) => {
     try {
-        console.log('리퀘스트헤더', req.headers);
         req.decoded = jwt.verify(req.headers.authorization, process.env.YAKSSOK_SECRET)
         
         return next();
@@ -26,12 +25,14 @@ exports.verifyToken = (req, res, next) => {
 };
 
 // access token 발급
-exports.access_token = (user) => {
+// exports.access_token = (user) => {
+exports.access_token = (id) => {
     try {
         // jwt 토큰 발급                         
-        const token = jwt.sign({
-            id: user.id,
-        }, process.env.YAKSSOK_SECRET, {
+        const token = jwt.sign(
+        { id }, 
+        process.env.YAKSSOK_SECRET, 
+        {
             expiresIn: '2h',
             issuer: 'YAKSSOK'
         });

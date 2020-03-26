@@ -27,54 +27,81 @@ router.get('/', async (req, res, next) => {
 });
 
 // 회원 가입
+// 페이스북 가입 과정 추가
 router.post('/', async (req, res, next) => {
+  const type = req.query.type;
   try {
-    // 아이디 중복체크 
-    const userId = await User.findOne({
-      where: { user_id: req.body.user_id }
-    })
+    // 일반 회원가입 처리
+    if(!type) {
+      // 아이디 중복체크 
+      const userId = await User.findOne({
+        where: { user_id: req.body.user_id }
+      })
 
-    if (userId) {
-      return res.json({
-        code: 409,
-        message: '사용인 중인 아이디입니다.'
+      if (userId) {
+        return res.json({
+          code: 409,
+          message: '사용인 중인 아이디입니다.'
+        });
+      }
+
+      // 이메일 중복 검사
+      const email = await User.findOne({
+        where: { email: req.body.email }
+      })
+
+      if (email) {
+        return res.json({
+          code: 409,
+          message: '이미 사용 중인 이메일입니다.'
+        });
+      }
+
+      // 단방향 암호화(복호화불가)
+      const hash = await bcrypt.hash(req.body.user_pwd, 12);
+
+      const user = await User.create({
+        user_id: req.body.user_id,
+        user_pwd: hash,
+        email: req.body.email,
+      })
+
+      const { id } = await User.findOne({
+        where: { user_id: req.body.user_id }
+      });
+
+      // 액세스 토큰 발급
+      // const token = access_token(user);
+      const token = access_token(id);
+
+      res.status(201).json({
+        code: 201,
+        message: `회원가입 성공`,
+        token,
+        id
       });
     }
 
-    // 이메일 중복 검사
-    const email = await User.findOne({
-      where: { email: req.body.email }
-    })
-
-    if (email) {
-      return res.json({
-        code: 409,
-        message: '이미 사용 중인 이메일입니다.'
+    // 페이스북 회원 가입처리
+    if(type) {
+      const user = await User.create({
+        user_id: req.body.user_id,
+        authType: req.body.authType
       });
+
+      // 회원가입했을 때는 어떤 결과가 리턴되지?
+      console.log('회원가입결과', user);
+
+      // 액세스 토큰 발급
+      // const token = access_token(id);
+
+      // console.log('페북 회원가입처리 결과', user);
+      // res.json({
+      //   code: 201,
+      //   message: '회원가입 성공', 
+      //   token
+      // })
     }
-
-    // 단방향 암호화(복호화불가)
-    const hash = await bcrypt.hash(req.body.user_pwd, 12);
-
-    const user = await User.create({
-      user_id: req.body.user_id,
-      user_pwd: hash,
-      email: req.body.email,
-    })
-
-    const { id } = await User.findOne({
-      where: { user_id: req.body.user_id }
-    });
-
-    // 엑세스 토큰 발급
-    const token = access_token(user);
-
-    res.status(201).json({
-      code: 201,
-      message: `회원가입 성공`,
-      token,
-      id
-    });
   } catch (err) {
     console.log('회원가입 에러발생', err);
     res.json(error);

@@ -14,6 +14,19 @@ const error = {
     message: '서버에서 에러가 발생했습니다.'
 };
 
+// 페이징 테스트
+router.get('/test', async (req, res, next) => {
+    // 
+    try  {
+        const count = await Product.count();
+        res.json({
+            code: 200,
+            count
+        });
+    } catch(err) {
+        console.log(err);
+    }
+});
 
 // 메인 화면에 뿌려질 제품 리스트 가져오기
 router.get('/', async (req, res, next) => {
@@ -75,10 +88,14 @@ router.get('/', async (req, res, next) => {
 });
 
 // 관리자 페이지 제품 리스트 
-router.get('/all', async (req, res, next) => {
+router.get('/all/:offSet', async (req, res, next) => {
     try {
-        let products = await Product.findAll({
+        console.log(' offset확인', req.params.offSet);
+
+        let products = await Product.findAndCountAll({
             order: [['id', 'DESC']],
+            limit: 10,
+            offset:  req.params.offSet * 10
         });
         res.json({
             code: 200,
