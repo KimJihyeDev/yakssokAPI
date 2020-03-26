@@ -8,11 +8,11 @@ module.exports = (sequelize,DataTypes) =>{
         },
         user_pwd:{
             type: DataTypes.STRING(100), 
-            allowNull: true,
+            allowNull: false,
         },
         email:{
             type: DataTypes.STRING(50),
-            allowNull: true,
+            allowNull: false,
             unique: true,
         },
     },{
