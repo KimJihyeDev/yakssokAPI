@@ -409,7 +409,7 @@
                             // 이미지 업로드
                             const uploadImage = await this.uploadImage();
                             if (!uploadImage) return false;
-                                
+
                             // 상품 등록 처리
                             const product = await axios.post('/products', this.product);
                             const { code, message } = product.data;
@@ -463,6 +463,16 @@
             },
         }).$mount('#vm');
     </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162004565-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-162004565-1');
+    </script>
+
 </body>
 
 </html>

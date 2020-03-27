@@ -314,14 +314,14 @@
 
                                 if (result.data.code === 200) {
                                     let path = result.data.message;
-                                  
+
                                     path = path.split('/') // production 코드(Linux)
                                     // path = path.split('\\') // 개발버전 코드드
 
                                     this.product.product_image = path[3];
 
                                     // 상품 등록 정보 수정 요청
-                                    result = await axios.patch(`/products/modify?id=${ param }`, this.product);
+                                    result = await axios.patch(`/products/modify?id=${param}`, this.product);
                                     const { code, message } = result.data;
 
                                     if (code === 200) {
@@ -365,7 +365,7 @@
                         (async () => {
                             try {
                                 const result = await axios.delete(`/products/delete?id=${param}`);
-                                
+
                                 if (result.data.code === 200) {
                                     alert('삭제하였습니다');
                                     location.href = '/product_list';
@@ -402,6 +402,16 @@
             },
         }).$mount('#vm');
     </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162004565-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-162004565-1');
+    </script>
+
 </body>
 
 </html>
