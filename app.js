@@ -1,28 +1,28 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
 //env파일 임포트 및 설정처리
 require('dotenv').config();
 
 
 //CORS 팩키지 모듈 임포트
-var cors = require('cors');
+const cors = require('cors');
 
 //시퀄라이저 ORM 객체 불러오기
-var sequelize = require('./models/index.js').sequelize;
+const sequelize = require('./models/index.js').sequelize;
 
 //라우팅 파일 불러오기
-var indexRouter = require('./routes/index');
-var userRouter = require('./routes/users');
-var productRouter = require('./routes/products');
-var fileRouter = require('./routes/files');
-var pictogramRouter = require('./routes/pictograms');
-var reviewRouter = require('./routes/review');
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/users');
+const productRouter = require('./routes/products');
+const fileRouter = require('./routes/files');
+const pictogramRouter = require('./routes/pictograms');
+const reviewRouter = require('./routes/review');
 
-var app = express();
+const app = express();
 
 
 //CORS 지원처리

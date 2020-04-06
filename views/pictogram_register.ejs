@@ -122,10 +122,6 @@
                         return true;
                     }
                 },
-                resetForm() {
-                    this.$refs.pictogram_name.value = '';
-                    this.$refs.image_path.value = '';
-                },
                 checkDuplication() {
                     return (async () => {
                         var response =
@@ -172,8 +168,9 @@
                             alert(message);
                             // 폼 초기화
                             this.pictogram.pictogram_name = '';
+                            this.$refs.image_path.value = '';
                         } else {
-                            alsert(message);
+                            alert(message);
                         }
                     })();
                 }

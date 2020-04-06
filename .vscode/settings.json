@@ -4,6 +4,5 @@
         "node_modules{,/**}",
         ".vscode{,/**}"
     ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/7f298144-e7f3-410d-b688-e93ae1f99bf9/resourceGroups/yakssok/providers/Microsoft.Web/sites/yakssokback",
     "appService.deploySubpath": ""
 }
