@@ -133,7 +133,7 @@
 
                         const { code, message } = response.data;
 
-                        if (code == 409) {
+                        if (code === 409) {
                             alert(message)
                             return false;
                         }
@@ -168,7 +168,7 @@
 
                         const response = await axios.post('/pictograms', form, config);
                         const { code, message } = response.data;
-                        if (code == 200) {
+                        if (code === 200) {
                             alert(message);
                             // 폼 초기화
                             this.pictogram.pictogram_name = '';

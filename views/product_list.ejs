@@ -79,7 +79,7 @@
                                                 <li class="page-item" v-if="totalPage > pageBlock && pageCount != 1">
                                                     <a class="page-link" tabindex="-1" @click="decreasePageCount">이전</a>
                                                 </li>
-                                                <li class="page-item" :class="{ active: currentPage == page}"
+                                                <li class="page-item" :class="{ active: currentPage === page}"
                                                     v-for="page in totalPage" @click="changePage(page)"
                                                     v-show="(page/pageBlock) > pageCount - 1 && (page/pageBlock) <= pageCount">
                                                     <a class="page-link">{{ page }}</a>
