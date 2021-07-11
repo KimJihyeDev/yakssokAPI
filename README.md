@@ -8,3 +8,5 @@
 ### 2. 사용기술
 - Node.js
 - Azure Cloud PaaS
+- Sequelize ORM
+- MySQL
