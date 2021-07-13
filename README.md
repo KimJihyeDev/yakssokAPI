@@ -7,6 +7,7 @@
 
 ### 2. 사용기술
 - Node.js
+- Express.js
 - Azure Cloud PaaS
 - Sequelize ORM
 - MySQL
